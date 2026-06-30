@@ -23,7 +23,7 @@ class Partner(models.Model):
 
     def _compute_meeting(self):
         if self.ids:
-            all_partners = self.with_context(active_test=False).search_read([('id', 'child_of', self.ids)], ["parent_id"])
+            all_partners = self.with_context(active_test=False).search([('id', 'child_of', self.ids)])
 
             event_id = self.env['calendar.event']._search([])  # ir.rules will be applied
             subquery_string, subquery_params = event_id.select()
@@ -39,18 +39,18 @@ class Partner(models.Model):
             meeting_data = self.env.cr.fetchall()
 
             # Create a dict {partner_id: event_ids} and fill with events linked to the partner
-            meetings = {p["id"]: set() for p in all_partners}
-            for m in meeting_data:
-                meetings[m[0]].add(m[1])
+            meetings = {}
+            for p_id, m_id, _ in meeting_data:
+                meetings.setdefault(p_id, set()).add(m_id)
 
             # Add the events linked to the children of the partner
-            for p in all_partners:
-                partner = p
+            for meeting_pid in set(meetings):
+                partner = self.browse(meeting_pid)
                 while partner:
-                    if partner["id"] in self.ids:
-                        meetings[partner["id"]] |= meetings[p["id"]]
-                    partner = next((pt for pt in all_partners if partner["parent_id"] and pt["id"] == partner["parent_id"][0]), None)
-            return {p.id: list(meetings[p.id]) for p in self}
+                    partner = partner.parent_id
+                    if partner in self:
+                        meetings[partner.id] = meetings.get(partner.id, set()) | meetings[meeting_pid]
+            return {p_id: list(meetings.get(p_id, set())) for p_id in self.ids}
         return {}
 
     def get_attendee_detail(self, meeting_ids):

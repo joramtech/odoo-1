@@ -5,15 +5,16 @@
 # Translators:
 # Friederike Fasterling-Nesselbosch, 2022
 # Martin Trigaux, 2023
-# Larissa Manderfeld, 2023
+# Wil Odoo, 2025
+# Larissa Manderfeld, 2025
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 16.0+e\n"
+"Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-12-15 12:50+0000\n"
+"POT-Creation-Date: 2025-02-10 08:27+0000\n"
 "PO-Revision-Date: 2022-09-22 05:45+0000\n"
-"Last-Translator: Larissa Manderfeld, 2023\n"
+"Last-Translator: Larissa Manderfeld, 2025\n"
 "Language-Team: German (https://app.transifex.com/odoo/teams/41243/de/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -271,7 +272,7 @@ msgstr "Beschreibung des Transportunternehmens"
 #. module: delivery
 #: model:ir.model.fields,field_description:delivery.field_stock_move_line__carrier_name
 msgid "Carrier Name"
-msgstr "Transporteur Name"
+msgstr "Name des Transportunternehmens"
 
 #. module: delivery
 #: model_terms:ir.ui.view,arch_db:delivery.stock_move_line_view_search_delivery
@@ -416,7 +417,7 @@ msgstr "Liefersatz"
 #. module: delivery
 #: model:ir.model,name:delivery.model_delivery_zip_prefix
 msgid "Delivery Zip Prefix"
-msgstr "Lieferung PLZ-Präfix"
+msgstr "PLZ-Präfix für Lieferung"
 
 #. module: delivery
 #: model:ir.model.fields,field_description:delivery.field_sale_order__recompute_delivery_price
@@ -430,8 +431,8 @@ msgid ""
 "Delivery zip prefixes are assigned to delivery carriers to restrict\n"
 "                which zips it is available to."
 msgstr ""
-"Lieferungspräfixe werden den Zustellern zugewiesen, um einzuschränken,\n"
-"für welche Postleitzahlen sie verfügbar sind."
+"PLZ-Präfixe für Lieferungen werden den Zustellern zugewiesen, um einzuschränken,\n"
+"            welche Postleitzahlen sie verfügbar sind."
 
 #. module: delivery
 #: model_terms:ir.ui.view,arch_db:delivery.view_delivery_carrier_form
@@ -477,7 +478,7 @@ msgstr "Anzeigename"
 #. module: delivery
 #: model:ir.actions.act_window,name:delivery.act_delivery_trackers_url
 msgid "Display tracking links"
-msgstr "Links zur Sendungsverfolgung anzeigen"
+msgstr "Sendungsverfolgungslinks anzeigen"
 
 #. module: delivery
 #: model_terms:ir.actions.act_window,help:delivery.action_delivery_carrier_form
@@ -516,6 +517,20 @@ msgstr ""
 #: model:ir.model.fields.selection,name:delivery.selection__delivery_carrier__invoice_policy__estimated
 msgid "Estimated cost"
 msgstr "Geschätzte Kosten"
+
+#. module: delivery
+#. odoo-python
+#: code:addons/delivery/models/stock_picking.py:0
+#, python-format
+msgid "Exception occurred with respect to carrier on the transfer"
+msgstr "Ausnahme in Bezug auf Zusteller im Transfer"
+
+#. module: delivery
+#. odoo-python
+#: code:addons/delivery/models/stock_picking.py:0
+#, python-format
+msgid "Exception:"
+msgstr "Ausnahme:"
 
 #. module: delivery
 #: model:ir.model.fields,help:delivery.field_sale_order__carrier_id
@@ -678,7 +693,14 @@ msgstr "Protokollieren Sie Anfragen, um die Fehlerdiagnose zu erleichtern."
 #. module: delivery
 #: model_terms:ir.actions.act_window,help:delivery.action_delivery_zip_prefix_list
 msgid "Manage delivery zip prefixes"
-msgstr "Zustellungspräfixe verwalten"
+msgstr "PLZ-Präfixe für Lieferungen verwalten"
+
+#. module: delivery
+#. odoo-python
+#: code:addons/delivery/models/stock_picking.py:0
+#, python-format
+msgid "Manual actions might be needed."
+msgstr "Manuelle Aktionen können erforderlich sein."
 
 #. module: delivery
 #: model:ir.model.fields,field_description:delivery.field_delivery_carrier__margin
@@ -693,7 +715,7 @@ msgstr "Die Marge kann nicht kleiner als -100 % sein."
 #. module: delivery
 #: model_terms:ir.ui.view,arch_db:delivery.view_delivery_carrier_form
 msgid "Margin on Rate"
-msgstr "Marge auf Preise"
+msgstr "Gewinnmarge"
 
 #. module: delivery
 #: model:ir.model.fields,field_description:delivery.field_delivery_price_rule__max_value
@@ -734,7 +756,7 @@ msgstr "OK"
 #. module: delivery
 #: model:ir.model.fields,field_description:delivery.field_delivery_price_rule__operator
 msgid "Operator"
-msgstr "Ausführender"
+msgstr "Operator"
 
 #. module: delivery
 #: model:ir.model.fields,field_description:delivery.field_choose_delivery_carrier__order_id
@@ -785,7 +807,7 @@ msgstr "Präfix"
 #. module: delivery
 #: model:ir.model.constraint,message:delivery.constraint_delivery_zip_prefix_name_uniq
 msgid "Prefix already exists!"
-msgstr "Prefix existiert bereits!"
+msgstr "Präfix existiert bereits!"
 
 #. module: delivery
 #: model:ir.model.fields,help:delivery.field_delivery_carrier__zip_prefix_ids
@@ -833,6 +855,11 @@ msgstr "Rücksendeetikett drucken"
 #: model:ir.model,name:delivery.model_product_template
 msgid "Product"
 msgstr "Produkt"
+
+#. module: delivery
+#: model:ir.model,name:delivery.model_product_category
+msgid "Product Category"
+msgstr "Produktkategorie"
 
 #. module: delivery
 #: model:ir.model,name:delivery.model_stock_move_line
@@ -917,7 +944,7 @@ msgstr "Speichern"
 #. module: delivery
 #: model_terms:ir.ui.view,arch_db:delivery.view_picking_withcarrier_out_form
 msgid "Send to Shipper"
-msgstr "An Versender liefern"
+msgstr "An Zusteller senden"
 
 #. module: delivery
 #: model:ir.model.fields,field_description:delivery.field_delivery_carrier__sequence
@@ -934,7 +961,7 @@ msgstr "Dienstleistungsprodukt"
 #: model:ir.model.fields,help:delivery.field_delivery_carrier__prod_environment
 msgid "Set to True if your credentials are certified for production."
 msgstr ""
-"Aus Wahr setzen, wenn Ihre Anmeldedaten für die Produktion zertifiziert ist."
+"Auf Wahr setzen, wenn Ihre Anmeldedaten für die Produktion zertifiziert ist."
 
 #. module: delivery
 #. odoo-python
@@ -944,8 +971,8 @@ msgid ""
 "Shipment sent to carrier %(carrier_name)s for shipping with tracking number "
 "%(ref)s<br/>Cost: %(price).2f %(currency)s"
 msgstr ""
-"Sendung an Transportunternehmen %(carrier_name)s übergeben für den Versand "
-"mit Sendungsnummer %(ref)s<br/>Kosten: %(price).2f %(currency)s"
+"Die Sendung mit der Sendungsnummer %(ref)s wurde an das Transportunternehmen"
+" %(carrier_name)s übergeben.<br/>Kosten: %(price).2f%(currency)s"
 
 #. module: delivery
 #: model:ir.model.fields,field_description:delivery.field_stock_picking__carrier_price
@@ -955,7 +982,7 @@ msgstr "Versandkosten"
 #. module: delivery
 #: model_terms:ir.ui.view,arch_db:delivery.view_picking_withcarrier_out_form
 msgid "Shipping Information"
-msgstr "Versandinformation"
+msgstr "Versandinformationen"
 
 #. module: delivery
 #: model:ir.model.fields,field_description:delivery.field_choose_delivery_carrier__carrier_id
@@ -1008,10 +1035,11 @@ msgstr ""
 #: model:ir.model.fields,help:delivery.field_product_template__hs_code
 msgid ""
 "Standardized code for international shipping and goods declaration. At the "
-"moment, only used for the FedEx shipping provider."
+"moment, only used for FedEx and USPS shipping providers."
 msgstr ""
-"Standardisierter Code für den internationalen Versand und die Zollanmeldung."
-" Im Moment nur für den FedEx-Versand verwendet."
+"Standardisierter Code für den internationalen Versand und die "
+"Warendeklaration. Im Moment nur für FedEx- und USPS-Versanddienstleister "
+"verwendet."
 
 #. module: delivery
 #: model:ir.model.fields,field_description:delivery.field_delivery_carrier__state_ids
@@ -1026,7 +1054,7 @@ msgstr "Lagerbuchung"
 #. module: delivery
 #: model:ir.model,name:delivery.model_stock_package_type
 msgid "Stock package type"
-msgstr "Standardpakettyp"
+msgstr "Typ des Lagerpakets"
 
 #. module: delivery
 #: model:ir.model.fields,field_description:delivery.field_delivery_carrier__supports_shipping_insurance
@@ -1143,7 +1171,7 @@ msgstr "Dieser Prozentsatz wird zu den Versandkosten hinzugefügt."
 #. module: delivery
 #: model:ir.model.fields,help:delivery.field_stock_quant_package__weight
 msgid "Total weight of all the products contained in the package."
-msgstr "Gesamtgewicht aller in der Verpackung enthaltenen Produkte."
+msgstr "Gesamtgewicht aller in dem Paket enthaltenen Produkte."
 
 #. module: delivery
 #: model:ir.model.fields,help:delivery.field_stock_picking__shipping_weight
@@ -1175,7 +1203,7 @@ msgstr "Gesamtgewicht der Produkte in der Kommissionierung."
 #. module: delivery
 #: model_terms:ir.ui.view,arch_db:delivery.delivery_tracking_url_warning_form
 msgid "Trackers URL"
-msgstr "Tracker-URL"
+msgstr "Verfolgungs-URL"
 
 #. module: delivery
 #: model_terms:ir.ui.view,arch_db:delivery.view_picking_withcarrier_out_form
@@ -1218,7 +1246,7 @@ msgstr "Versandkosten aktualisieren"
 #. module: delivery
 #: model:ir.model.fields,field_description:delivery.field_delivery_price_rule__variable
 msgid "Variable"
-msgstr "Variabel"
+msgstr "Variable"
 
 #. module: delivery
 #: model:ir.model.fields,field_description:delivery.field_delivery_price_rule__variable_factor
@@ -1284,9 +1312,34 @@ msgstr ""
 "Die folgenden Lieferpositionen (Produkt, abgerechnete Menge und Preis) sind bereits bearbeitet worden:\n"
 
 #. module: delivery
+#. odoo-python
+#: code:addons/delivery/models/product_category.py:0
+#, python-format
+msgid ""
+"You cannot delete the deliveries product category as it is used on the "
+"delivery carriers products."
+msgstr ""
+"Sie können die Produktkategorie für Lieferungen nicht löschen, da sie für "
+"die Produkte der Zusteller verwendet wird."
+
+#. module: delivery
+#. odoo-python
+#: code:addons/delivery/models/stock_picking.py:0
+#, python-format
+msgid ""
+"You cannot pack products into the same package when they have different "
+"carriers (i.e. check that all of their transfers have a carrier assigned and"
+" are using the same carrier)."
+msgstr ""
+"Sie können keine Produkte in ein und dasselbe Paket packen, wenn sie "
+"unterschiedliche Transportunternehmen haben (d. h. überprüfen Sie, ob allen "
+"Ihren Transfers ein Transportunternehmen zugewiesen ist und ob sie dasselbe "
+"Transportunternehmen verwenden)."
+
+#. module: delivery
 #: model_terms:ir.ui.view,arch_db:delivery.delivery_tracking_url_warning_form
 msgid "You have multiple tracker links, they are available in the chatter."
-msgstr "Sie haben mehrere Tracker-Links, die im Chatter verfügbar sind."
+msgstr "Sie haben mehrere Verfolgungslinks, die im Chatter verfügbar sind."
 
 #. module: delivery
 #. odoo-python

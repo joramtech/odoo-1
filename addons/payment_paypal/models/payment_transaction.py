@@ -37,6 +37,20 @@ class PaymentTransaction(models.Model):
         base_url = self.provider_id.get_base_url()
         partner_first_name, partner_last_name = payment_utils.split_partner_name(self.partner_name)
         webhook_url = urls.url_join(base_url, PaypalController._webhook_url)
+        if (
+            self.partner_address
+            and self.partner_city
+            and self.partner_country_id
+            and (self.partner_zip or not self.partner_country_id.zip_required)
+            and (self.partner_state_id or not self.partner_country_id.state_required)
+        ):
+            # Ensure given address cannot be altered.
+            no_shipping = '0'
+            address_override = '1'
+        else:
+            # Do not prompt for a delivery address.
+            no_shipping = '1'
+            address_override = '0'
         return {
             'address1': self.partner_address,
             'amount': self.amount,
@@ -51,6 +65,8 @@ class PaymentTransaction(models.Model):
             'item_number': self.reference,
             'last_name': partner_last_name,
             'lc': self.partner_lang,
+            'no_shipping': no_shipping,
+            'address_override': address_override,
             'notify_url': webhook_url if self.provider_id.paypal_use_ipn else None,
             'return_url': urls.url_join(base_url, PaypalController._return_url),
             'state': self.partner_state_id.name,
@@ -91,6 +107,13 @@ class PaymentTransaction(models.Model):
         super()._process_notification_data(notification_data)
         if self.provider_code != 'paypal':
             return
+
+        amount = notification_data.get('amt') or notification_data.get('mc_gross')
+        currency_code = notification_data.get('cc') or notification_data.get('mc_currency')
+        assert amount and currency_code, 'PayPal: missing amount or currency'
+        assert self.currency_id.compare_amounts(float(amount), self.amount + self.fees) == 0, \
+            'PayPal: mismatching amounts'
+        assert currency_code == self.currency_id.name, 'PayPal: mismatching currency codes'
 
         txn_id = notification_data.get('txn_id')
         txn_type = notification_data.get('txn_type')

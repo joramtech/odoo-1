@@ -3,6 +3,8 @@
 
 from odoo import api, fields, models, tools, _
 
+from .mail_render_mixin import BYPASS_RESTRICTED_RENDERING
+
 
 class MailComposerMixin(models.AbstractModel):
     """ Mixin used to edit and render some fields used when sending emails or
@@ -21,8 +23,8 @@ class MailComposerMixin(models.AbstractModel):
     _description = 'Mail Composer Mixin'
 
     # Content
-    subject = fields.Char('Subject', compute='_compute_subject', readonly=False, store=True)
-    body = fields.Html('Contents', compute='_compute_body', render_engine='qweb', store=True, readonly=False, sanitize=False)
+    subject = fields.Char('Subject', compute='_compute_subject', readonly=False, store=True, compute_sudo=False)
+    body = fields.Html('Contents', compute='_compute_body', render_engine='qweb', store=True, readonly=False, sanitize=False, compute_sudo=False)
     template_id = fields.Many2one('mail.template', 'Mail Template', domain="[('model', '=', render_model)]")
     # Access
     is_mail_template_editor = fields.Boolean('Is Editor', compute='_compute_is_mail_template_editor')
@@ -84,10 +86,10 @@ class MailComposerMixin(models.AbstractModel):
             if not self.can_edit_body or composer_value in (sanitized_template_value, template_value):
                 # Take the previous body which we can trust without HTML editor reformatting
                 self.body = self.template_id.body_html
-                return super(MailComposerMixin, self.sudo())._render_field(field, *args, **kwargs)
+                return super(MailComposerMixin, self.with_context(bypass_restricted_rendering=BYPASS_RESTRICTED_RENDERING))._render_field(field, *args, **kwargs)
 
         elif composer_value == template_value:
             # The value is the same as the mail template so we trust it
-            return super(MailComposerMixin, self.sudo())._render_field(field, *args, **kwargs)
+            return super(MailComposerMixin, self.with_context(bypass_restricted_rendering=BYPASS_RESTRICTED_RENDERING))._render_field(field, *args, **kwargs)
 
         return super(MailComposerMixin, self)._render_field(field, *args, **kwargs)

@@ -8,19 +8,21 @@
 # Mohammad Tahmasebi <hit.tah75@gmail.com>, 2023
 # Hamid Darabi, 2023
 # Faraz Sadri Alamdari <ifarazir@gmail.com>, 2023
-# Farid Hariri <fhari1234@gmail.com>, 2023
+# F Hariri <fhari1234@gmail.com>, 2023
 # Hanna Kheradroosta, 2023
 # Martin Trigaux, 2023
 # Hamed Mohammadi <hamed@dehongi.com>, 2023
-# fardin mardani, 2023
+# fardin mardani <fmardani0@gmail.com>, 2023
+# Hamid Ahmadimoghaddam, 2023
+# Mostafa Barmshory <mostafa.barmshory@gmail.com>, 2024
 # 
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-05-23 08:24+0000\n"
+"POT-Creation-Date: 2025-05-08 20:35+0000\n"
 "PO-Revision-Date: 2022-09-22 05:53+0000\n"
-"Last-Translator: fardin mardani, 2023\n"
+"Last-Translator: Mostafa Barmshory <mostafa.barmshory@gmail.com>, 2024\n"
 "Language-Team: Persian (https://app.transifex.com/odoo/teams/41243/fa/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -31,7 +33,7 @@ msgstr ""
 #. module: portal
 #: model_terms:ir.ui.view,arch_db:portal.portal_my_security
 msgid "\" to validate your action."
-msgstr ""
+msgstr "\"برای تأیید اقدام خود."
 
 #. module: portal
 #. odoo-javascript
@@ -43,7 +45,7 @@ msgstr "%1d روز تاخیر"
 #. module: portal
 #: model_terms:ir.ui.view,arch_db:portal.portal_my_security
 msgid "1. Enter your password to confirm you own this account"
-msgstr ""
+msgstr "۱. برای تأیید مالکیت این حساب، رمز عبور خود را وارد کنید."
 
 #. module: portal
 #: model_terms:ir.ui.view,arch_db:portal.portal_my_security
@@ -51,6 +53,9 @@ msgid ""
 "2. Confirm you want to delete your account by\n"
 "                                        copying down your login ("
 msgstr ""
+"2. تأیید کنید که می خواهید حساب خود را حذف کنید\n"
+"\n"
+"کپی کردن لاگین شما ("
 
 #. module: portal
 #: model_terms:ir.ui.view,arch_db:portal.portal_back_in_edit_mode
@@ -99,17 +104,17 @@ msgstr "<i class=\"fa fa-pencil\"/> ویرایش"
 #. module: portal
 #: model_terms:ir.ui.view,arch_db:portal.portal_my_security
 msgid "<i title=\"Documentation\" class=\"fa fa-fw o_button_icon fa-info-circle\"/>"
-msgstr ""
+msgstr "<i title=\"Documentation\" class=\"fa fa-fw o_button_icon fa-info-circle\"/>"
 
 #. module: portal
 #: model_terms:ir.ui.view,arch_db:portal.portal_my_details_fields
 msgid "<option value=\"\">Country...</option>"
-msgstr ""
+msgstr "کشور"
 
 #. module: portal
 #: model_terms:ir.ui.view,arch_db:portal.portal_my_details_fields
 msgid "<option value=\"\">select...</option>"
-msgstr ""
+msgstr "<option value=\"\">انتخاب...</option>"
 
 #. module: portal
 #: model_terms:ir.ui.view,arch_db:portal.portal_my_details_fields
@@ -120,19 +125,33 @@ msgid ""
 msgstr ""
 
 #. module: portal
+#: model_terms:ir.ui.view,arch_db:portal.pager
+msgid ""
+"<span class=\"fa fa-chevron-left\" role=\"img\" aria-label=\"Previous\" "
+"title=\"Previous\"/>"
+msgstr ""
+"<span class=\"fa fa-chevron-left\" role=\"img\" aria-label=\"Previous\" "
+"title=\"Previous\"/>"
+
+#. module: portal
+#: model_terms:ir.ui.view,arch_db:portal.pager
+msgid "<span class=\"fa fa-chevron-right\" role=\"img\" aria-label=\"Next\" title=\"Next\"/>"
+msgstr "<span class=\"fa fa-chevron-right\" role=\"img\" aria-label=\"Next\" title=\"Next\"/>"
+
+#. module: portal
 #: model_terms:ir.ui.view,arch_db:portal.portal_searchbar
 msgid "<span class=\"small me-1 navbar-text\">Filter By:</span>"
-msgstr ""
+msgstr "<span class=\"small me-1 navbar-text\">فیلتر توسط:</span>"
 
 #. module: portal
 #: model_terms:ir.ui.view,arch_db:portal.portal_searchbar
 msgid "<span class=\"small me-1 navbar-text\">Group By:</span>"
-msgstr ""
+msgstr "<span class=\"small me-1 navbar-text\">دسته‌بندی بر اساس:</span>"
 
 #. module: portal
 #: model_terms:ir.ui.view,arch_db:portal.portal_searchbar
 msgid "<span class=\"small me-1 navbar-text\">Sort By:</span>"
-msgstr ""
+msgstr "<span class=\"small me-1 navbar-text\">مرتب‌سازی بر اساس:</span>"
 
 #. module: portal
 #: model_terms:ir.ui.view,arch_db:portal.portal_share_template
@@ -222,14 +241,14 @@ msgstr ""
 #. module: portal
 #: model:ir.model,name:portal.model_res_users_apikeys_description
 msgid "API Key Description"
-msgstr ""
+msgstr "توضیحات کلید API"
 
 #. module: portal
 #. odoo-javascript
 #: code:addons/portal/static/src/js/portal.js:0
 #, python-format
 msgid "API Key Ready"
-msgstr ""
+msgstr "کلید API آماده است"
 
 #. module: portal
 #. odoo-javascript
@@ -254,7 +273,7 @@ msgstr "امنیت حساب"
 #: code:addons/portal/controllers/portal.py:0
 #, python-format
 msgid "Account deleted!"
-msgstr ""
+msgstr "حساب کاربری حذف شد!"
 
 #. module: portal
 #: model_terms:ir.ui.view,arch_db:portal.portal_share_wizard
@@ -286,19 +305,12 @@ msgstr "اضافه شده در"
 #. module: portal
 #: model:ir.model.fields.selection,name:portal.selection__portal_wizard_user__email_state__exist
 msgid "Already Registered"
-msgstr ""
-
-#. module: portal
-#. odoo-python
-#: code:addons/portal/controllers/mail.py:0
-#, python-format
-msgid "An access token must be provided for each attachment."
-msgstr "یک توکن دسترسی باید برای هر پیوست فراهم شود."
+msgstr "قبلاً ثبت‌نام شده است"
 
 #. module: portal
 #: model_terms:ir.ui.view,arch_db:portal.portal_my_security
 msgid "Are you sure you want to do this?"
-msgstr ""
+msgstr "آیا مطمئن هستید که می‌خواهید این کار را انجام دهید؟"
 
 #. module: portal
 #. odoo-javascript
@@ -330,6 +342,8 @@ msgid ""
 "Changing VAT number is not allowed once document(s) have been issued for "
 "your account. Please contact us directly for this operation."
 msgstr ""
+"تغییر شماره مالیات بر ارزش افزوده (VAT) پس از صدور مستندات برای حساب شما "
+"مجاز نیست. لطفاً برای انجام این عملیات مستقیماً با ما تماس بگیرید"
 
 #. module: portal
 #: model_terms:ir.ui.view,arch_db:portal.portal_my_details_fields
@@ -337,6 +351,8 @@ msgid ""
 "Changing company name is not allowed once document(s) have been issued for "
 "your account. Please contact us directly for this operation."
 msgstr ""
+"تغییر نام شرکت پس از صدور مستندات برای حساب شما مجاز نیست. لطفاً برای انجام "
+"این عملیات مستقیماً با ما تماس بگیرید."
 
 #. module: portal
 #. odoo-javascript
@@ -449,6 +465,8 @@ msgid ""
 "Currently available to everyone viewing this document, click to restrict to "
 "internal employees."
 msgstr ""
+"در حال حاضر برای همه کسانی که این سند را مشاهده می‌کنند در دسترس است. برای "
+"محدود کردن به کارکنان داخلی کلیک کنید."
 
 #. module: portal
 #. odoo-javascript
@@ -458,6 +476,8 @@ msgid ""
 "Currently restricted to internal employees, click to make it available to "
 "everyone viewing this document."
 msgstr ""
+"در حال حاضر محدود به کارکنان داخلی است. برای در دسترس قرار دادن آن برای همه "
+"کسانی که این سند را مشاهده می‌کنند، کلیک کنید."
 
 #. module: portal
 #: model:ir.model.fields,field_description:portal.field_res_config_settings__portal_allow_api_keys
@@ -484,7 +504,7 @@ msgstr "حذف"
 #. module: portal
 #: model_terms:ir.ui.view,arch_db:portal.portal_my_security
 msgid "Delete Account"
-msgstr ""
+msgstr "حذف حساب کاربری"
 
 #. module: portal
 #: model_terms:ir.ui.view,arch_db:portal.portal_my_security
@@ -500,7 +520,7 @@ msgstr "جزییات"
 #. module: portal
 #: model_terms:ir.ui.view,arch_db:portal.portal_my_security
 msgid "Developer API Keys"
-msgstr ""
+msgstr "کلیدهای API توسعه‌دهنده"
 
 #. module: portal
 #: model_terms:ir.ui.view,arch_db:portal.portal_my_security
@@ -511,6 +531,11 @@ msgid ""
 "                                            This action cannot be undone.\n"
 "                                        </b>"
 msgstr ""
+"اکانت خود را غیرفعال کنید و از ورود بیشتر جلوگیری کنید.<br/>\n"
+"<b>\n"
+"<i class=\"fa fa-exclamation-triangle text-danger\"/>\n"
+"این عمل قابل لغو نیست.\n"
+"</b>"
 
 #. module: portal
 #. odoo-javascript
@@ -554,7 +579,7 @@ msgstr "پست الکترونیک"
 #. module: portal
 #: model_terms:ir.ui.view,arch_db:portal.wizard_view
 msgid "Email Address already taken by another user"
-msgstr ""
+msgstr "آدرس ایمیل قبلاً توسط کاربر دیگری استفاده شده است"
 
 #. module: portal
 #: model:ir.model,name:portal.model_mail_thread
@@ -573,7 +598,7 @@ msgstr "فقط کارمندان"
 #: code:addons/portal/static/src/xml/portal_security.xml:0
 #, python-format
 msgid "Enter a description of and purpose for the key."
-msgstr ""
+msgstr "توضیحی درباره کلید و هدف از آن را وارد کنید."
 
 #. module: portal
 #. odoo-javascript
@@ -585,7 +610,7 @@ msgstr "گذرواژه فراموش شده؟"
 #. module: portal
 #: model_terms:ir.ui.view,arch_db:portal.wizard_view
 msgid "Grant Access"
-msgstr ""
+msgstr "اجازه‌ی دسترسی"
 
 #. module: portal
 #: model:ir.model,name:portal.model_portal_wizard
@@ -611,6 +636,8 @@ msgid ""
 "Here is your new API key, use it instead of a password for RPC access.\n"
 "                Your login is still necessary for interactive usage."
 msgstr ""
+"این کلید API جدید شما است، از آن به جای رمز عبور برای دسترسی RPC استفاده کنید.\n"
+"ورود شما همچنان برای استفاده تعاملی ضروری است."
 
 #. module: portal
 #: model_terms:ir.ui.view,arch_db:portal.portal_breadcrumbs
@@ -629,7 +656,7 @@ msgstr "شناسه"
 #: code:addons/portal/static/src/xml/portal_security.xml:0
 #, python-format
 msgid "Important:"
-msgstr ""
+msgstr "مهم:"
 
 #. module: portal
 #. odoo-javascript
@@ -648,17 +675,17 @@ msgstr "کاربر داخلی"
 #: code:addons/portal/static/src/xml/portal_chatter.xml:0
 #, python-format
 msgid "Internal notes are only displayed to internal users."
-msgstr ""
+msgstr "یادداشت‌های داخلی فقط برای کاربران داخلی نمایش داده می‌شود."
 
 #. module: portal
 #: model:ir.model.fields.selection,name:portal.selection__portal_wizard_user__email_state__ko
 msgid "Invalid"
-msgstr ""
+msgstr "نامعتبر"
 
 #. module: portal
 #: model_terms:ir.ui.view,arch_db:portal.wizard_view
 msgid "Invalid Email Address"
-msgstr ""
+msgstr "آدرس ایمیل نامعتبر"
 
 #. module: portal
 #. odoo-python
@@ -682,17 +709,17 @@ msgstr "پیام دعوت"
 #. module: portal
 #: model:mail.template,description:portal.mail_template_data_portal_welcome
 msgid "Invitation email to contacts to create a user account"
-msgstr ""
+msgstr "ایمیل دعوت به مخاطبین برای ایجاد یک حساب کاربری"
 
 #. module: portal
 #: model:ir.model.fields,field_description:portal.field_portal_wizard_user__is_internal
 msgid "Is Internal"
-msgstr ""
+msgstr "داخلی است"
 
 #. module: portal
 #: model:ir.model.fields,field_description:portal.field_portal_wizard_user__is_portal
 msgid "Is Portal"
-msgstr ""
+msgstr "پرتال است"
 
 #. module: portal
 #. odoo-javascript
@@ -702,6 +729,8 @@ msgid ""
 "It is very important that this description be clear\n"
 "                and complete,"
 msgstr ""
+"بسیار مهم است که این توصیف واضح باشد\n"
+"و کامل،"
 
 #. module: portal
 #: model:ir.model.fields,field_description:portal.field_portal_share____last_update
@@ -727,7 +756,7 @@ msgstr "آخرین بروز رسانی در"
 #. module: portal
 #: model:ir.model.fields,field_description:portal.field_portal_wizard_user__login_date
 msgid "Latest Authentication"
-msgstr ""
+msgstr "آخرین احراز هویت"
 
 #. module: portal
 #. odoo-javascript
@@ -759,13 +788,15 @@ msgid ""
 "Model %(model_name)s does not support token signature, as it does not have "
 "%(field_name)s field."
 msgstr ""
+"مدل %(model_name)s از امضای توکن پشتیبانی نمی کند، زیرا فیلد %(field_name)s"
+"  ندارد."
 
 #. module: portal
 #. odoo-python
 #: code:addons/portal/controllers/portal.py:0
 #, python-format
 msgid "Multi company reports are not supported."
-msgstr ""
+msgstr "گزارش‌های چند شرکتی پشتیبانی نمی‌شوند."
 
 #. module: portal
 #: model_terms:ir.ui.view,arch_db:portal.portal_my_details_fields
@@ -777,7 +808,7 @@ msgstr "نام"
 #: code:addons/portal/static/src/xml/portal_security.xml:0
 #, python-format
 msgid "Name your key"
-msgstr ""
+msgstr "نام کلید خود را وارد کنید"
 
 #. module: portal
 #. odoo-javascript
@@ -785,7 +816,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:portal.portal_my_security
 #, python-format
 msgid "New API Key"
-msgstr ""
+msgstr "کلید API جدید"
 
 #. module: portal
 #: model_terms:ir.ui.view,arch_db:portal.portal_my_security
@@ -796,7 +827,6 @@ msgstr "گذرواژه جدید:"
 #. odoo-javascript
 #: code:addons/portal/static/src/xml/portal_chatter.xml:0
 #: code:addons/portal/static/src/xml/portal_chatter.xml:0
-#: model_terms:ir.ui.view,arch_db:portal.pager
 #, python-format
 msgid "Next"
 msgstr "بعدی"
@@ -821,7 +851,7 @@ msgstr "لوگوی اودو"
 #: code:addons/portal/models/res_users_apikeys_description.py:0
 #, python-format
 msgid "Only internal and portal users can create API keys"
-msgstr ""
+msgstr "فقط کاربران داخلی و پرتال می‌توانند کلیدهای API ایجاد کنند"
 
 #. module: portal
 #. odoo-javascript
@@ -860,7 +890,7 @@ msgstr "تلفن"
 #: code:addons/portal/static/src/xml/portal_security.xml:0
 #, python-format
 msgid "Please enter your password to confirm you own this account"
-msgstr ""
+msgstr "لطفاً گذرواژه خود را وارد کنید تا مالکیت این حساب را تأیید کنید."
 
 #. module: portal
 #. odoo-python
@@ -868,7 +898,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:portal.wizard_view
 #, python-format
 msgid "Portal Access Management"
-msgstr ""
+msgstr "مدیریت دسترسی پرتال"
 
 #. module: portal
 #: model:ir.model.fields,field_description:portal.field_portal_mixin__access_url
@@ -893,17 +923,12 @@ msgstr "پیکربندی کاربر پرتال"
 #. module: portal
 #: model:mail.template,name:portal.mail_template_data_portal_welcome
 msgid "Portal: User Invite"
-msgstr ""
+msgstr "پرتال: دعوت کاربر"
 
 #. module: portal
 #: model_terms:ir.ui.view,arch_db:portal.portal_record_sidebar
 msgid "Powered by"
 msgstr "راه اندازی شده به وسیله"
-
-#. module: portal
-#: model_terms:ir.ui.view,arch_db:portal.pager
-msgid "Prev"
-msgstr "قبلی"
 
 #. module: portal
 #. odoo-javascript
@@ -926,16 +951,18 @@ msgid ""
 "Put my email and phone in a block list to make sure I'm never contacted "
 "again"
 msgstr ""
+"ایمیل و شماره تلفن من را در لیست مسدود قرار دهید تا اطمینان حاصل شود که هرگز"
+" با من تماس گرفته نمی‌شود."
 
 #. module: portal
 #: model:ir.model,name:portal.model_ir_qweb
 msgid "Qweb"
-msgstr ""
+msgstr "Qweb"
 
 #. module: portal
 #: model_terms:ir.ui.view,arch_db:portal.wizard_view
 msgid "Re-Invite"
-msgstr ""
+msgstr "دعوت دوباره"
 
 #. module: portal
 #: model:ir.model.fields,field_description:portal.field_portal_share__partner_ids
@@ -945,7 +972,7 @@ msgstr "گیرندگان"
 #. module: portal
 #: model:ir.model.fields,field_description:portal.field_portal_share__resource_ref
 msgid "Related Document"
-msgstr ""
+msgstr "سند مرتبط"
 
 #. module: portal
 #: model:ir.model.fields,field_description:portal.field_portal_share__res_id
@@ -960,12 +987,12 @@ msgstr "مدل مدرک مربوطه"
 #. module: portal
 #: model_terms:ir.ui.view,arch_db:portal.wizard_view
 msgid "Revoke Access"
-msgstr ""
+msgstr "دسترسی را لغو کنید"
 
 #. module: portal
 #: model_terms:ir.ui.view,arch_db:portal.portal_my_security
 msgid "Scope"
-msgstr ""
+msgstr "دامنه"
 
 #. module: portal
 #: model_terms:ir.ui.view,arch_db:portal.portal_searchbar
@@ -996,6 +1023,9 @@ msgid ""
 "                        The email address of each selected contact must be valid and unique.\n"
 "                        If necessary, you can fix any contact's email address directly in the list."
 msgstr ""
+"در لیست زیر انتخاب کنید که کدام مخاطب باید متعلق به پورتال باشد.\n"
+"آدرس ایمیل هر مخاطب انتخابی باید معتبر و منحصر به فرد باشد.\n"
+"در صورت لزوم، می‌توانید آدرس ایمیل هر مخاطب را مستقیماً در لیست برطرف کنید."
 
 #. module: portal
 #. odoo-javascript
@@ -1014,7 +1044,7 @@ msgstr "اشتراک سند"
 #. module: portal
 #: model:ir.model.fields,field_description:portal.field_ir_ui_view__customize_show
 msgid "Show As Optional Inherit"
-msgstr ""
+msgstr "نمایش به‌عنوان ارث‌بری اختیاری"
 
 #. module: portal
 #: model_terms:ir.ui.view,arch_db:portal.user_sign_in
@@ -1029,6 +1059,8 @@ msgid ""
 "Some fields are required. Please make sure to write a message or attach a "
 "document"
 msgstr ""
+"برخی از فیلدها ضروری هستند. لطفاً اطمینان حاصل کنید که پیامی نوشته‌اید یا "
+"سندی پیوست کرده‌اید"
 
 #. module: portal
 #. odoo-python
@@ -1064,7 +1096,7 @@ msgstr "سپاسگزاریم!"
 #: code:addons/portal/controllers/portal.py:0
 #, python-format
 msgid "The attachment %s cannot be removed because it is linked to a message."
-msgstr ""
+msgstr "فایل پیوست %s  را نمی‌توان حذف کرد زیرا به یک پیام مرتبط است."
 
 #. module: portal
 #. odoo-python
@@ -1072,15 +1104,7 @@ msgstr ""
 #, python-format
 msgid ""
 "The attachment %s cannot be removed because it is not in a pending state."
-msgstr ""
-
-#. module: portal
-#. odoo-python
-#: code:addons/portal/controllers/mail.py:0
-#, python-format
-msgid ""
-"The attachment %s does not exist or you do not have the rights to access it."
-msgstr ""
+msgstr "فایل پیوست %s را نمی‌توان حذف کرد زیرا در وضعیت معلق نیست."
 
 #. module: portal
 #. odoo-python
@@ -1088,21 +1112,21 @@ msgstr ""
 #, python-format
 msgid ""
 "The attachment does not exist or you do not have the rights to access it."
-msgstr ""
+msgstr "فایل پیوست وجود ندارد یا شما دسترسی لازم برای مشاهده آن را ندارید."
 
 #. module: portal
 #. odoo-python
 #: code:addons/portal/wizard/portal_wizard.py:0
 #, python-format
 msgid "The contact \"%s\" does not have a valid email."
-msgstr ""
+msgstr "مخاطب \"%s\" ایمیل معتبر ندارد."
 
 #. module: portal
 #. odoo-python
 #: code:addons/portal/wizard/portal_wizard.py:0
 #, python-format
 msgid "The contact \"%s\" has the same email as an existing user"
-msgstr ""
+msgstr "مخاطب \"%s\" دارای ایمیلی مشابه با یک کاربر موجود است."
 
 #. module: portal
 #. odoo-python
@@ -1110,14 +1134,14 @@ msgstr ""
 #, python-format
 msgid ""
 "The document does not exist or you do not have the rights to access it."
-msgstr ""
+msgstr "سند وجود ندارد یا شما دسترسی لازم برای مشاهده آن را ندارید."
 
 #. module: portal
 #. odoo-javascript
 #: code:addons/portal/static/src/xml/portal_security.xml:0
 #, python-format
 msgid "The key cannot be retrieved later and provides"
-msgstr ""
+msgstr "کلید بعداً قابل بازیابی نیست و فراهم می‌کند"
 
 #. module: portal
 #. odoo-python
@@ -1139,14 +1163,14 @@ msgstr "این رمز عبور سابق شما, رمز عبور شما تغیی�
 #: code:addons/portal/wizard/portal_wizard.py:0
 #, python-format
 msgid "The partner \"%s\" already has the portal access."
-msgstr ""
+msgstr "همکار \"%s\" دسترسی به پرتال را دارد."
 
 #. module: portal
 #. odoo-python
 #: code:addons/portal/wizard/portal_wizard.py:0
 #, python-format
 msgid "The partner \"%s\" has no portal access or is internal."
-msgstr ""
+msgstr "همکار \"%s\" دسترسی به پورتال ندارد یا داخلی است."
 
 #. module: portal
 #. odoo-python
@@ -1155,7 +1179,7 @@ msgstr ""
 msgid ""
 "The template \"Portal: new user\" not found for sending email to the portal "
 "user."
-msgstr ""
+msgstr "قالب \"پرتال: کاربر جدید\" برای ارسال ایمیل به کاربر پورتال پیدا نشد."
 
 #. module: portal
 #. odoo-javascript
@@ -1182,22 +1206,26 @@ msgid ""
 "This partner is linked to an internal User and already has access to the "
 "Portal."
 msgstr ""
+"این همکار به یک کاربر داخلی مرتبط است و در حال حاضر دسترسی به پرتال دارد."
 
 #. module: portal
 #: model_terms:ir.ui.view,arch_db:portal.wizard_view
 msgid ""
 "This text is included at the end of the email sent to new portal users."
 msgstr ""
+"این متن در انتهای ایمیلی که به کاربران جدید پرتال ارسال می‌شود گنجانده شده "
+"است."
 
 #. module: portal
 #: model:ir.model.fields,help:portal.field_portal_wizard__welcome_message
 msgid "This text is included in the email sent to new users of the portal."
 msgstr ""
+"این متن در ایمیلی که به کاربران جدید پرتال ارسال می‌شود گنجانده شده است."
 
 #. module: portal
 #: model_terms:ir.ui.view,arch_db:portal.portal_searchbar
 msgid "Toggle filters"
-msgstr ""
+msgstr "فیلترها را تغییر دهید"
 
 #. module: portal
 #: model:ir.model.fields,field_description:portal.field_portal_wizard_user__user_id
@@ -1222,7 +1250,7 @@ msgstr "معتبر"
 #. module: portal
 #: model_terms:ir.ui.view,arch_db:portal.wizard_view
 msgid "Valid Email Address"
-msgstr ""
+msgstr "ایمیل معتبر"
 
 #. module: portal
 #: model_terms:ir.ui.view,arch_db:portal.portal_my_security
@@ -1342,7 +1370,7 @@ msgstr "کلید خود را بنویسید"
 #. module: portal
 #: model_terms:ir.ui.view,arch_db:portal.portal_my_security
 msgid "Wrong password."
-msgstr ""
+msgstr "گذرواژه اشتباه"
 
 #. module: portal
 #. odoo-python
@@ -1374,19 +1402,19 @@ msgstr "شما باید"
 #. module: portal
 #: model_terms:ir.ui.view,arch_db:portal.portal_my_security
 msgid "You should enter \""
-msgstr ""
+msgstr "شما باید وارد کنید \""
 
 #. module: portal
 #. odoo-python
 #: code:addons/portal/wizard/portal_wizard.py:0
 #, python-format
 msgid "You should first grant the portal access to the partner \"%s\"."
-msgstr ""
+msgstr "ابتدا باید دسترسی به پرتال را به همکار \"%s\" بدهید."
 
 #. module: portal
 #: model:mail.template,subject:portal.mail_template_data_portal_welcome
 msgid "Your account at {{ object.user_id.company_id.name }}"
-msgstr ""
+msgstr "حساب کاربری شما در {{ object.user_id.company_id.name }}"
 
 #. module: portal
 #: model_terms:ir.ui.view,arch_db:portal.portal_contact
@@ -1424,7 +1452,7 @@ msgstr "کامنتها"
 #: code:addons/portal/static/src/xml/portal_security.xml:0
 #, python-format
 msgid "full access"
-msgstr ""
+msgstr "دسترسی کامل"
 
 #. module: portal
 #. odoo-javascript
@@ -1434,6 +1462,8 @@ msgid ""
 "it will be the only way to\n"
 "                identify the key once created"
 msgstr ""
+"این تنها راه خواهد بود\n"
+"کلید را پس از ایجاد شناسایی کنید"
 
 #. module: portal
 #. odoo-javascript
@@ -1464,4 +1494,4 @@ msgstr "برای ارسال یک کامنت"
 #: code:addons/portal/static/src/xml/portal_security.xml:0
 #, python-format
 msgid "to your user account, it is very important to store it securely."
-msgstr ""
+msgstr "به حساب کاربری شما، بسیار مهم است که آن را به طور ایمن نگهداری کنید."

@@ -62,10 +62,14 @@ export class AnalyticDistribution extends Component {
             },
             isToMany: false,
             onRecordSaved: async (record) => {
-                this.mainRef.el.focus();
+                if (!this.props.record.model.multiEdit) {
+                    this.mainRef.el.focus();
+                }
             },
             onClose: () => {
-                this.mainRef.el.focus();
+                if (!this.props.record.model.multiEdit) {
+                    this.mainRef.el.focus();
+                }
             },
             fieldString: this.env._t("Analytic Distribution Template"),
         });
@@ -333,9 +337,6 @@ export class AnalyticDistribution extends Component {
 
     async percentageChanged(dist_tag, ev) {
         dist_tag.percentage = this.parse(ev.target.value);
-        if (dist_tag.percentage == 0) {
-            this.deleteTag(dist_tag.id, dist_tag.group_id);
-        }
         this.autoFill();
     }
 
@@ -445,7 +446,7 @@ export class AnalyticDistribution extends Component {
     }
 
     tagIsReady({analytic_account_id, percentage}) {
-        return !!analytic_account_id && !!percentage;
+        return !!analytic_account_id;
     }
 
     sumByGroup(id) {
@@ -503,9 +504,17 @@ export class AnalyticDistribution extends Component {
     }
 
     onSaveNew() {
-        this.openTemplate({ resId: false, context: {
-            'default_analytic_distribution': this.listForJson,
-        }});
+        const { record, product_field, account_field } = this.props;
+        this.openTemplate({
+            resId: false,
+            context: {
+                default_analytic_distribution: this.listForJson,
+                default_partner_id: record.data['partner_id'] ? record.data['partner_id'][0] : undefined,
+                default_product_id: product_field ? record.data[product_field][0] : undefined,
+                default_account_prefix: account_field ? record.data[account_field][1].substr(0, 3) : undefined,
+            },
+        });
+
         this.closeAnalyticEditor();
     }
 

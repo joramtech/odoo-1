@@ -20,20 +20,20 @@
 # Jussi Lehto <jussi@gulfeo.com>, 2022
 # Kari Lindgren <kari.lindgren@emsystems.fi>, 2022
 # Tuomo Aura <tuomo.aura@web-veistamo.fi>, 2022
-# Jarmo Kortetjärvi <jarmo.kortetjarvi@gmail.com>, 2022
 # Miika Nissi <miika.nissi@tawasta.fi>, 2022
 # Pekko Tuomisto <pekko.tuomisto@web-veistamo.fi>, 2022
 # Mikko Salmela <salmemik@gmail.com>, 2022
 # Martin Trigaux, 2023
-# Ossi Mantylahti <ossi.mantylahti@obs-solutions.fi>, 2023
+# Jarmo Kortetjärvi <jarmo.kortetjarvi@gmail.com>, 2023
+# Ossi Mantylahti <ossi.mantylahti@obs-solutions.fi>, 2025
 # 
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-05-23 08:23+0000\n"
+"POT-Creation-Date: 2025-02-10 08:27+0000\n"
 "PO-Revision-Date: 2022-09-22 05:45+0000\n"
-"Last-Translator: Ossi Mantylahti <ossi.mantylahti@obs-solutions.fi>, 2023\n"
+"Last-Translator: Ossi Mantylahti <ossi.mantylahti@obs-solutions.fi>, 2025\n"
 "Language-Team: Finnish (https://app.transifex.com/odoo/teams/41243/fi/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -1872,6 +1872,11 @@ msgid "Display Sponsors and Exhibitors on your event pages"
 msgstr "Näytä sponsorit ja näytteilleasettajat tapahtumasivuillasi"
 
 #. module: event
+#: model:ir.model.fields,field_description:event.field_event_event__date_tz
+msgid "Display Timezone"
+msgstr "Näytä aikavyöhyke"
+
+#. module: event
 #: model:ir.model.fields,field_description:event.field_event_mail__sequence
 msgid "Display order"
 msgstr "Näyttöjärjestys"
@@ -2581,6 +2586,15 @@ msgid "In Progress"
 msgstr "Käynnissä"
 
 #. module: event
+#: model:ir.model.fields,help:event.field_event_event__date_tz
+msgid ""
+"Indicates the timezone in which the event dates/times will be displayed on "
+"the website."
+msgstr ""
+"Ilmoittaa aikavyöhykkeen, jossa tapahtuman päivämäärät/ajat näytetään "
+"verkkosivustolla."
+
+#. module: event
 #: model:ir.model.fields,field_description:event.field_event_mail__interval_nbr
 #: model:ir.model.fields,field_description:event.field_event_type_mail__interval_nbr
 msgid "Interval"
@@ -3019,7 +3033,7 @@ msgstr "Virheiden määrä"
 #: model:ir.model.fields,help:event.field_event_event__message_needaction_counter
 #: model:ir.model.fields,help:event.field_event_registration__message_needaction_counter
 msgid "Number of messages requiring action"
-msgstr ""
+msgstr "Toimenpiteitä vaativien viestien määrä"
 
 #. module: event
 #: model:ir.model.fields,help:event.field_event_event__message_has_error_counter
@@ -3695,6 +3709,7 @@ msgstr ""
 msgid ""
 "The template which is referenced should be coming from %(model_name)s model."
 msgstr ""
+"Mallin, johon viitataan, pitäisi olla peräisin %(model_name)s-mallista."
 
 #. module: event
 #. odoo-python
@@ -3813,7 +3828,6 @@ msgid "Tickets can be printed or scanned directly from your phone."
 msgstr "Liput voi tulostaa tai skannata suoraan puhelimella."
 
 #. module: event
-#: model:ir.model.fields,field_description:event.field_event_event__date_tz
 #: model:ir.model.fields,field_description:event.field_event_type__default_timezone
 msgid "Timezone"
 msgstr "Aikavyöhyke"
@@ -4031,6 +4045,16 @@ msgid "What's new?"
 msgstr "Mikä on uutta?"
 
 #. module: event
+#: model:ir.model.fields,help:event.field_event_event__date_begin
+#: model:ir.model.fields,help:event.field_event_registration__event_begin_date
+msgid ""
+"When the event is scheduled to take place (expressed in your local timezone "
+"on the form view)."
+msgstr ""
+"Milloin tapahtuman on tarkoitus tapahtua (ilmaistuna paikallisena "
+"aikavyöhykkeenä lomakkeen näkymässä)."
+
+#. module: event
 #: model:ir.model.fields,help:event.field_event_event__is_ongoing
 msgid "Whether event has begun"
 msgstr "Onko tapahtuma jo alkanut"
@@ -4164,7 +4188,7 @@ msgstr "varattu +"
 #: model_terms:ir.ui.view,arch_db:event.view_event_form
 #: model_terms:ir.ui.view,arch_db:event.view_event_type_form
 msgid "to"
-msgstr " "
+msgstr "->"
 
 #. module: event
 #. odoo-python

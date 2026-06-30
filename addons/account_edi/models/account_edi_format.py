@@ -42,6 +42,9 @@ class AccountEdiFormat(models.Model):
     def create(self, vals_list):
         edi_formats = super().create(vals_list)
 
+        if not edi_formats:
+            return edi_formats
+
         # activate by default on journal
         if not self.pool.loaded:
             # The registry is not totally loaded. We cannot yet recompute the field on jourals as
@@ -223,7 +226,7 @@ class AccountEdiFormat(models.Model):
         """
         to_process = []
         try:
-            xml_tree = etree.fromstring(content)
+            xml_tree = etree.fromstring(content, parser=etree.XMLParser(remove_comments=True, resolve_entities=False))
         except Exception as e:
             _logger.exception("Error when converting the xml content to etree: %s" % e)
             return to_process
@@ -484,7 +487,7 @@ class AccountEdiFormat(models.Model):
             return self.env['res.partner'].search(domain + extra_domain, limit=1)
 
         for search_method in (search_with_vat, search_with_domain, search_with_phone_mail, search_with_name):
-            for extra_domain in ([('company_id', '=', self.env.company.id)], []):
+            for extra_domain in ([('company_id', '=', self.env.company.id)], [('company_id', '=', False)]):
                 partner = search_method(extra_domain)
                 if partner:
                     return partner
@@ -492,6 +495,11 @@ class AccountEdiFormat(models.Model):
 
     def _retrieve_product(self, name=None, default_code=None, barcode=None):
         '''Search all products and find one that matches one of the parameters.
+        Use the following priority:
+        1. barcode
+        2. default_code
+        3. name (exact match)
+        4. name (ilike)
 
         :param name:            The name of the product.
         :param default_code:    The default_code of the product.
@@ -502,19 +510,25 @@ class AccountEdiFormat(models.Model):
             # cut Sales Description from the name
             name = name.split('\n')[0]
         domains = []
-        for value, domain in (
-            (name, ('name', 'ilike', name)),
-            (default_code, ('default_code', '=', default_code)),
-            (barcode, ('barcode', '=', barcode)),
-        ):
-            if value is not None:
-                domains.append([domain])
+        if barcode:
+            domains.append([('barcode', '=', barcode)])
+        if default_code:
+            domains.append([('default_code', '=', default_code)])
+        if name:
+            domains += [[('name', '=', name)], [('name', 'ilike', name)]]
 
-        domain = expression.AND([
-            expression.OR(domains),
-            [('company_id', 'in', [False, self.env.company.id])],
-        ])
-        return self.env['product.product'].search(domain, limit=1)
+        for domain in domains:
+            product = self.env['product.product'].search(
+                expression.AND([
+                    domain,
+                    [('company_id', 'in', [False, self.env.company.id])],
+                ]),
+                limit=1
+            )
+            # We need a single product. Exit early if one is found (implements the priority logic).
+            if product:
+                return product
+        return self.env['product.product']
 
     def _retrieve_tax(self, amount, type_tax_use):
         '''Search all taxes and find one that matches all of the parameters.

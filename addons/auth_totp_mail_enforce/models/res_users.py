@@ -49,12 +49,12 @@ class Users(models.Model):
         if user._mfa_type() != 'totp_mail':
             return super()._totp_check(code)
 
-        key = self._get_totp_mail_key()
+        key = user._get_totp_mail_key()
         match = TOTP(key).match(code, window=3600, timestep=3600)
         if match is None:
-            _logger.info("2FA check (mail): FAIL for %s %r", self, self.login)
+            _logger.info("2FA check (mail): FAIL for %s %r", user, user.login)
             raise AccessDenied(_("Verification failed, please double-check the 6-digit code"))
-        _logger.info("2FA check(mail): SUCCESS for %s %r", self, self.login)
+        _logger.info("2FA check(mail): SUCCESS for %s %r", user, user.login)
         self._totp_rate_limit_purge('code_check')
         self._totp_rate_limit_purge('send_email')
         return True
@@ -65,6 +65,10 @@ class Users(models.Model):
 
     def _get_totp_mail_code(self):
         self.ensure_one()
+        assert (
+            self.env.su
+            or (request and not request.session.uid and request.session.get('pre_uid') == self.id)  # nosemgrep: requests-in-models
+        )
 
         key = self._get_totp_mail_key()
 
@@ -74,7 +78,7 @@ class Users(models.Model):
         code = hotp(key, counter)
         expiration = timedelta(seconds=3600)
         lang = babel_locale_parse(self.env.context.get('lang') or self.lang)
-        expiration = babel.dates.format_timedelta(expiration, lang)
+        expiration = babel.dates.format_timedelta(expiration, locale=lang)
 
         return str(code).zfill(6), expiration
 

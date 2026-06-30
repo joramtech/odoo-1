@@ -73,7 +73,7 @@ class IrQWeb(models.AbstractModel):
         el.set('t-call', key)
         snippet_lang = self._context.get('snippet_lang')
         if snippet_lang:
-            el.set('t-lang', f"'{snippet_lang}'")
+            el.set('t-lang', repr(snippet_lang))
 
         el.set('t-options', f"{{'snippet-key': {key!r}}}")
         view = self.env['ir.ui.view']._get(key).sudo()
@@ -109,9 +109,10 @@ class IrQWeb(models.AbstractModel):
             if not module or module.state == 'installed':
                 return []
             name = el.attrib.get('string') or 'Snippet'
-            div = '<div name="%s" data-oe-type="snippet" data-module-id="%s" data-oe-thumbnail="%s"><section/></div>' % (
+            div = '<div name="%s" data-oe-type="snippet" data-module-id="%s" data-module-display-name="%s" data-oe-thumbnail="%s"><section/></div>' % (
                 escape(pycompat.to_text(name)),
                 module.id,
+                module.display_name,
                 escape(pycompat.to_text(thumbnail))
             )
             self._append_text(div, compile_context)
@@ -211,7 +212,7 @@ class ManyToOne(models.AbstractModel):
     def attributes(self, record, field_name, options, values):
         attrs = super(ManyToOne, self).attributes(record, field_name, options, values)
         if options.get('inherit_branding'):
-            many2one = getattr(record, field_name)
+            many2one = record[field_name]
             if many2one:
                 attrs['data-oe-many2one-id'] = many2one.id
                 attrs['data-oe-many2one-model'] = many2one._name
@@ -501,7 +502,7 @@ class Image(models.AbstractModel):
             # force a complete load of the image data to validate it
             image.load()
         except Exception:
-            logger.exception("Failed to load remote image %r", url)
+            logger.warning("Failed to load remote image %r", url, exc_info=True)
             return None
 
         # don't use original data in case weird stuff was smuggled in, with
@@ -613,7 +614,7 @@ def _collapse_whitespace(text):
     """ Collapses sequences of whitespace characters in ``text`` to a single
     space
     """
-    return re.sub('\s+', ' ', text)
+    return re.sub(r'\s+', ' ', text)
 
 
 def _realize_padding(it):

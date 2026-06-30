@@ -7,7 +7,6 @@
 # Ahmet Altinisik <aaltinisik@altinkaya.com.tr>, 2022
 # abc Def <hdogan1974@gmail.com>, 2022
 # omerfarukcakmak <omerfarukckmk@protonmail.com>, 2022
-# Ediz Duman <neps1192@gmail.com>, 2022
 # Levent Karakaş <levent@mektup.at>, 2022
 # Martin Trigaux, 2022
 # Ertuğrul Güreş <ertugrulg@projetgrup.com>, 2022
@@ -15,14 +14,16 @@
 # Murat Kaplan <muratk@projetgrup.com>, 2022
 # Tugay Hatıl <tugayh@projetgrup.com>, 2023
 # Halil, 2023
+# Ediz Duman <neps1192@gmail.com>, 2024
+# Deniz Guvener_Odoo <degu@odoo.com>, 2025
 # 
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-05-23 08:22+0000\n"
+"POT-Creation-Date: 2024-02-06 13:31+0000\n"
 "PO-Revision-Date: 2022-09-22 05:54+0000\n"
-"Last-Translator: Halil, 2023\n"
+"Last-Translator: Deniz Guvener_Odoo <degu@odoo.com>, 2025\n"
 "Language-Team: Turkish (https://app.transifex.com/odoo/teams/41243/tr/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -70,7 +71,7 @@ msgstr "Daha iyi bir küresel indirim zaten uygulanmaktadır."
 #: code:addons/pos_loyalty/static/src/js/Loyalty.js:0
 #, python-format
 msgid "A reward could not be loaded"
-msgstr ""
+msgstr "Bir ödül yüklenemedi"
 
 #. module: pos_loyalty
 #: model:ir.model.fields,help:pos_loyalty.field_loyalty_rule__promo_barcode
@@ -151,6 +152,13 @@ msgstr "Kupon nokta(lar)ı"
 #, python-format
 msgid "Current Balance:"
 msgstr "Güncel Bakiye:"
+
+#. module: pos_loyalty
+#. odoo-javascript
+#: code:addons/pos_loyalty/static/src/xml/OrderReceipt.xml:0
+#, python-format
+msgid "Customer"
+msgstr "Müşteri"
 
 #. module: pos_loyalty
 #. odoo-javascript
@@ -336,6 +344,13 @@ msgstr "Bu kuponla ödül talep edilemez."
 #, python-format
 msgid "No rewards available."
 msgstr "Uygun ödül yok."
+
+#. module: pos_loyalty
+#. odoo-javascript
+#: code:addons/pos_loyalty/static/src/js/ControlButtons/eWalletButton.js:0
+#, python-format
+msgid "No valid eWallet found"
+msgstr "Geçerli bir eCüzdan bulunamadı"
 
 #. module: pos_loyalty
 #. odoo-javascript
@@ -566,6 +581,8 @@ msgid ""
 "The reward \"%s\" contain an error in its domain, your domain must be "
 "compatible with the PoS client"
 msgstr ""
+"\"%s\" ödülünde alanla ilgili bir hata var, alanınızın Satış Noktası "
+"istemcisiyle uyumlu olması gerekir"
 
 #. module: pos_loyalty
 #: model:ir.model.fields,help:pos_loyalty.field_pos_order_line__reward_id
@@ -759,6 +776,15 @@ msgstr "Daha önce satılmış bir hediye kartını satamazsınız."
 msgid "You cannot set negative quantity or price to gift card or ewallet."
 msgstr ""
 "Hediye kartı veya e-cüzdan için negatif miktar veya fiyat ayarlayamazsınız."
+
+#. module: pos_loyalty
+#. odoo-javascript
+#: code:addons/pos_loyalty/static/src/js/ControlButtons/eWalletButton.js:0
+#, python-format
+msgid ""
+"You either have not created an eWallet or all your eWallets have expired."
+msgstr ""
+"Ya bir e-Cüzdan oluşturmadınız ya da tüm e-Cüzdanlarınızın süresi doldu."
 
 #. module: pos_loyalty
 #. odoo-python

@@ -28,12 +28,14 @@ odoo.define('website.tour.form_editor', function (require) {
         });
     }
 
+    // TODO: in master only keep the conversion of the double quotes character.
     // Replace all `"` character by `&quot;`, all `'` character by `&apos;` and
     // all "`" character by `&lsquo;`.
     const getQuotesEncodedName = function (name) {
             return name.replaceAll(/"/g, character => `&quot;`)
                        .replaceAll(/'/g, character => `&apos;`)
-                       .replaceAll(/`/g, character => `&lsquo;`);
+                       .replaceAll(/`/g, character => `&lsquo;`)
+                       .replaceAll("\\", character => `&bsol;`);
     };
 
     const triggerFieldByLabel = (label) => {
@@ -110,6 +112,9 @@ odoo.define('website.tour.form_editor', function (require) {
             let inputType = type === 'textarea' ? type : `input[type="${type}"]`;
             const nameAttribute = isCustom && label ? getQuotesEncodedName(label) : name;
             testText += `:has(${inputType}[name="${nameAttribute}"]${required ? "[required]" : ""})`;
+            // Because 'testText' will be used as selector to verify the content
+            // of the label, the `\` character needs to be escaped.
+            testText = testText.replaceAll("\\", "\\\\");
         }
         ret.push({
             content: "Check the resulting field",
@@ -135,6 +140,38 @@ odoo.define('website.tour.form_editor', function (require) {
             content: "Drop the form snippet",
             trigger: '#oe_snippets .oe_snippet:has(.s_website_form) .oe_snippet_thumbnail',
             run: 'drag_and_drop iframe #wrap',
+        }, {
+            content: "Check if the form snippet is dropped",
+            trigger: "iframe .s_website_form_field",
+            run: () => null,
+        },
+        // Check if fields in two form snippet have unique IDs
+        {
+            content: "Drop another form snippet",
+            trigger: '#oe_snippets .oe_snippet:has(.s_website_form) .oe_snippet_thumbnail',
+            run: 'drag_and_drop iframe #wrap',
+        }, {
+            content: "Check if there are two form snippets on the page",
+            trigger: "iframe .s_website_form:nth-of-type(2) .s_website_form_field",
+            run: () => null,
+        }, {
+            content: "Check that the first field of both the form snippets have different IDs",
+            trigger: "iframe .s_website_form:nth-of-type(1) input[name='name']",
+            run: function() {
+                const firstFieldForm1El = this.$anchor[0];
+                const firstFieldForm2El = firstFieldForm1El.ownerDocument.querySelector(
+                    ".s_website_form:nth-of-type(2) input[name='name']"
+                );
+                if (firstFieldForm1El.id === firstFieldForm2El.id) {
+                    console.error("The first fields of two different form snippet have the same ID");
+                }
+            },
+        }, {
+            content: "Click on the second form",
+            trigger: "iframe .s_website_form:nth-of-type(2)",
+        }, {
+            content: "Remove the second snippet",
+            trigger: "iframe .oe_overlay.oe_active .oe_snippet_remove"
         }, {
             content: "Select form by clicking on an input field",
             extra_trigger: 'iframe .s_website_form_field',
@@ -181,7 +218,63 @@ odoo.define('website.tour.form_editor', function (require) {
             content: 'Change the label position of the phone field',
             trigger: 'we-button[data-select-label-position="right"]',
         },
+        ...addCustomField("char", "text", "Conditional Visibility Check 1", false),
+        ...addCustomField("char", "text", "Conditional Visibility Check 2", false),
+        ...selectButtonByData("data-set-visibility='conditional'"),
+        ...selectButtonByData("data-set-visibility-dependency='Conditional Visibility Check 1'"),
+        ...addCustomField("char", "text", "Conditional Visibility Check 2", false),
+        ...selectFieldByLabel("Conditional Visibility Check 1"),
+        ...selectButtonByData("data-set-visibility='conditional'"),
+        {
+            content: "Check that 'Conditional Visibility Check 2' is not in the list of the visibility selector of Conditional Visibility Check 1",
+            trigger: "we-select[data-name='hidden_condition_opt']:not(:has(we-button[data-set-visibility-dependency='Conditional Visibility Check 2']))",
+            run: () => null,
+        },
+        ...addCustomField("char", "text", "Conditional Visibility Check 3", false),
+        ...addCustomField("char", "text", "Conditional Visibility Check 4", false),
+        ...selectButtonByData("data-set-visibility='conditional'"),
+        ...selectButtonByData("data-set-visibility-dependency='Conditional Visibility Check 3'"),
+        {
+            content: "Change the label of 'Conditional Visibility Check 4' and change it to 'Conditional Visibility Check 3'",
+            trigger: 'we-input[data-set-label-text] input',
+            run: "text Conditional Visibility Check 3",
+        },
+        {
+            content: "Check that the conditional visibility of the renamed field is removed",
+            trigger: "we-customizeblock-option.snippet-option-WebsiteFieldEditor we-select:contains('Visibility'):has(we-toggler:contains('Always Visible'))",
+            run: () => null,
+        },
+        ...addCustomField("char", "text", "Conditional Visibility Check 5", false),
+        ...addCustomField("char", "text", "Conditional Visibility Check 6", false),
+        ...selectButtonByData("data-set-visibility='conditional'"),
+        {
+            content: "Change the label of 'Conditional Visibility Check 6' and change it to 'Conditional Visibility Check 5'",
+            trigger: 'we-input[data-set-label-text] input',
+            run: "text Conditional Visibility Check 5",
+        },
+        {
+            content: "Check that 'Conditional Visibility Check 5' is not in the list of the renamed field",
+            trigger: "we-customizeblock-option.snippet-option-WebsiteFieldEditor we-select[data-name='hidden_condition_opt']:not(:has(we-button:contains('Conditional Visibility Check 5')))",
+            run: () => null,
+        },
         ...addExistingField('email_cc', 'text', 'Test conditional visibility', false, {visibility: CONDITIONALVISIBILITY, condition: 'odoo'}),
+        // Check that visibility condition is deleted on dependency type change.
+        ...addCustomField("char", "text", "dependent", false, {visibility: CONDITIONALVISIBILITY}),
+        ...addCustomField("selection", "radio", "dependency", false),
+        ...selectFieldByLabel("dependent"),
+        ...selectButtonByData('data-set-visibility-dependency="dependency"'),
+        ...selectFieldByLabel("dependency"),
+        ...selectButtonByData('data-custom-field="char"'),
+        ...selectFieldByLabel("dependent"),
+        {
+            content: "Open the select",
+            trigger: 'we-select:has(we-button[data-set-visibility="visible"]) we-toggler',
+        },
+        {
+            content: "Check that the field no longer has conditional visibility",
+            trigger: "we-select we-button[data-set-visibility='visible'].active",
+            run: () => null,
+        },
 
         ...addExistingField('date', 'text', 'Test Date', true),
 
@@ -232,6 +325,25 @@ odoo.define('website.tour.form_editor', function (require) {
                         ":has(.checkbox:has(label:contains('Wiko Stairway')):has(input[type='checkbox'][required]))",
             run: function () {},
         },
+        // Check conditional visibility for the relational fields
+        ...selectButtonByData("data-set-visibility='conditional'"),
+        ...selectButtonByData("data-set-visibility-dependency='recipient_ids'"),
+        ...selectButtonByText("Is not equal to"),
+        ...selectButtonByText("Mitchell Admin"),
+        ...wTourUtils.clickOnSave(),
+        {
+            content: "Check 'products' field is visible.",
+            trigger: `iframe .s_website_form:has(${triggerFieldByLabel("Products")}:visible)`,
+            run: () => {}, // it's a check
+        }, {
+            content: "choose the option 'Mitchell Admin' of partner.",
+            trigger: "iframe .checkbox:has(label:contains('Mitchell Admin')) input[type='checkbox']",
+        }, {
+            content: "Check 'products' field is not visible.",
+            trigger: "iframe .s_website_form" +`:has(${triggerFieldByLabel("Products")}:not(:visible))`,
+            run: () => {}, // it's a check
+        },
+        ...wTourUtils.clickOnEditAndWaitEditMode(),
 
         ...addCustomField('selection', 'radio', 'Service', true),
         {
@@ -255,6 +367,7 @@ odoo.define('website.tour.form_editor', function (require) {
             run: 'text Management Service',
         }, {
             content: "Mark the field as not required",
+            extra_trigger: "we-list table input:eq(3)[name='Management Service']",
             trigger: 'we-button[data-name="required_opt"] we-checkbox',
         }, {
             content: "Check the resulting field",
@@ -274,33 +387,59 @@ odoo.define('website.tour.form_editor', function (require) {
             trigger: 'we-list table input:eq(0)',
             run: 'text Germany',
         }, {
+            content: "Check that the label has been changed on the snippet",
+            trigger: "iframe .s_website_form_field.s_website_form_custom.s_website_form_required" +
+                ":has(.s_website_form_select_item:contains('Germany'))",
+            run: function () {},
+        }, {
             content: "Change Option 2 Label",
             trigger: 'we-list table input:eq(1)',
             run: 'text Belgium',
+        }, {
+            content: "Check that the label has been changed on the snippet",
+            trigger: "iframe .s_website_form_field.s_website_form_custom.s_website_form_required" +
+                ":has(.s_website_form_select_item:contains('Belgium'))",
+            run: function () {},
         }, {
             content: "Change first Option 3 label",
             trigger: 'we-list table input:eq(2)',
             run: 'text France',
         }, {
+            content: "Check that the label has been changed on the snippet",
+            trigger: "iframe .s_website_form_field.s_website_form_custom.s_website_form_required" +
+                ":has(.s_website_form_select_item:contains('France'))",
+            run: function () {},
+        }, {
             content: "Click on Add new Checkbox",
             trigger: 'we-list we-button.o_we_list_add_optional',
         }, {
             content: "Change last Option label",
-            trigger: 'we-list table input:eq(3)',
+            trigger: "we-list table input:eq(3)[name='Item']",
             run: 'text Canada',
+        }, {
+            content: "Check that the label has been changed on the snippet",
+            trigger: "iframe .s_website_form_field.s_website_form_custom.s_website_form_required" +
+                ":has(.s_website_form_select_item:contains('Canada'))",
+            run: function () {},
         }, {
             content: "Remove Germany Option",
             trigger: '.o_we_select_remove_option:eq(0)',
+        }, {
+            content: "Check that the Germany option was removed",
+            trigger: "iframe .s_website_form_field.s_website_form_custom.s_website_form_required" +
+                ":has(label:contains('State'))" +
+                ":not(:has(.s_website_form_select_item:contains('Germany')))",
+            run: function () {},
         }, {
             content: "Click on Add new Checkbox",
             trigger: 'we-list we-button.o_we_list_add_optional',
         }, {
             content: "Change last option label with a number",
-            trigger: 'we-list table input:eq(3)',
+            trigger: "we-list table input:eq(3)[name='Item']",
             run: 'text 44 - UK',
         }, {
             content: "Check that the input value is the full option value",
-            trigger: 'we-list table input:eq(3)',
+            trigger: "we-list table input:eq(3)[name='44 - UK']",
             run: () => {
                 const addedOptionEl = document.querySelector('iframe.o_iframe').contentDocument.querySelector('.s_website_form_field select option[value="44 - UK"]');
                 if (!addedOptionEl) {
@@ -418,6 +557,16 @@ odoo.define('website.tour.form_editor', function (require) {
         ...addCustomField("char", "text", "field C", false),
         ...selectFieldByLabel("field B"),
         ...selectButtonByText(CONDITIONALVISIBILITY),
+        ...selectButtonByText(CONDITIONALVISIBILITY),
+        {
+            content: "Check that there is a comparator after two clicks on 'Visible only if'",
+            trigger: "[data-attribute-name='visibilityComparator']",
+            run: function () {
+                if (!this.$anchor[0].querySelector("we-button.active")) {
+                    console.error("A default comparator should be set");
+                }
+            },
+        },
         ...selectButtonByData('data-set-visibility-dependency="field C"'),
         ...selectButtonByData('data-select-data-attribute="set"'),
         {
@@ -485,7 +634,63 @@ odoo.define('website.tour.form_editor', function (require) {
             trigger: `iframe .s_website_form:has(${triggerFieldByLabel("field A")}:visible)`,
             run: () => null, // it's a check
         },
+
         ...wTourUtils.clickOnEditAndWaitEditMode(),
+        ...addCustomField("char", "text", "field D", false),
+        {
+            content: "Select the 'Subject' field",
+            trigger: 'iframe .s_website_form_field.s_website_form_model_required:has(label:contains("Subject"))',
+        },
+        ...selectButtonByText(CONDITIONALVISIBILITY),
+        ...selectButtonByData('data-set-visibility-dependency="field D"'),
+        ...selectButtonByData('data-select-data-attribute="set"'),
+        {
+            content: "Set a default value to the 'Subject' field",
+            trigger: 'we-input[data-attribute-name="value"] input',
+            run: 'text Default Subject',
+        },
+        {
+            content: "Select the 'Your Message' field",
+            trigger: 'iframe .s_website_form_field.s_website_form_required:has(label:contains("Your Message"))',
+        },
+        ...selectButtonByText(CONDITIONALVISIBILITY),
+        ...selectButtonByData('data-set-visibility-dependency="field D"'),
+        ...selectButtonByData('data-select-data-attribute="set"'),
+
+        ...wTourUtils.clickOnSave(),
+        // Ensure that a field required for a model is not disabled when
+        // conditionally hidden.
+        {
+            content: "Check that the 'Subject' field is not disabled",
+            trigger: `iframe .s_website_form:has(.s_website_form_model_required ` +
+                `.s_website_form_input[value="Default Subject"]:not([disabled]):not(:visible))`,
+            run: () => null, // it's a check
+        },
+        // Ensure that a required field (but not for a model) is disabled when
+        // conditionally hidden.
+        {
+            content: "Check that the 'Your Message' field is disabled",
+            trigger: `iframe .s_website_form:has(.s_website_form_required ` +
+                `.s_website_form_input[name="body_html"][required][disabled]:not(:visible))`,
+            run: () => null, // it's a check
+        },
+
+        ...wTourUtils.clickOnEditAndWaitEditMode(),
+        {
+            content: "Select the 'Subject' field",
+            trigger: 'iframe .s_website_form_field.s_website_form_model_required:has(label:contains("Subject"))',
+        },
+        ...selectButtonByData("data-set-visibility='visible'"),
+        {
+            content: "Empty the default value of the 'Subject' field",
+            trigger: 'we-input[data-attribute-name="value"] input',
+            run: "remove_text",
+        },
+        {
+            content: "Select the 'Your Message' field",
+            trigger: 'iframe .s_website_form_field.s_website_form_required:has(label:contains("Your Message"))',
+        },
+        ...selectButtonByData("data-set-visibility='visible'"),
         {
             content: 'Click on the submit button',
             trigger: 'iframe .s_website_form_send',
@@ -496,11 +701,12 @@ odoo.define('website.tour.form_editor', function (require) {
             trigger: '[data-field-name="email_to"] input',
             run: 'text test@test.test',
         },
+        // The next four calls to "addCustomField" are there to ensure such
+        // characters do not make the form editor crash.
         ...addCustomField("char", "text", "''", false),
         ...addCustomField("char", "text", '""', false),
         ...addCustomField("char", "text", "``", false),
-        ...addCustomField("char", "text", "Same name", false),
-        ...addCustomField("char", "text", "Same name", false),
+        ...addCustomField("char", "text", "\\", false),
         {
             content: 'Save the page',
             trigger: 'button[data-action=save]',
@@ -511,21 +717,6 @@ odoo.define('website.tour.form_editor', function (require) {
             trigger: 'iframe body:not(.editor_enable)',
             // We have to this that way because the input type = hidden.
             extra_trigger: 'iframe form:has(input[name="email_to"][value="test@test.test"])',
-        },
-        {
-            content: "Check that the 'Same name 1' field is visible",
-            trigger: "iframe .s_website_form_field .s_website_form_label_content:contains('Same name 1')",
-            run: () => null,
-        },
-        {
-            content: "Check that there is only one field 'Same name' visible",
-            trigger: "iframe .s_website_form",
-            run: () => {
-                const sameNameEls = document.querySelector("iframe.o_iframe").contentDocument.querySelectorAll(".s_website_form_field input[name='Same name']");
-                if (sameNameEls.length !== 1) {
-                    console.error("One and only one field with the label 'Same name' should be visible");
-                }
-            },
         },
     ]);
 
@@ -569,6 +760,10 @@ odoo.define('website.tour.form_editor', function (require) {
             content: "Change a random option",
             trigger: '[data-set-mark] input',
             run: 'text_blur **',
+        }, {
+            content: "Check that the recipient email is correct",
+            trigger: 'we-input[data-field-name="email_to"] input:propValue("website_form_contactus_edition_no_email@mail.com")',
+            run: () => null, // it's a check.
         },
     ]));
 
@@ -686,6 +881,114 @@ odoo.define('website.tour.form_editor', function (require) {
             trigger: 'iframe body:not(:has([data-snippet="s_website_form"])) .fa-check-circle',
             run: () => null,
         }
+    ]);
+
+    wTourUtils.registerWebsitePreviewTour('website_form_contactus_change_random_option', {
+        test: true,
+        url: '/contactus',
+        edition: true,
+    }, editContactUs([
+        {
+            content: "Change a random option",
+            trigger: '[data-set-mark] input',
+            run: 'text_blur **',
+        },
+    ]));
+
+    // Check that the editable form content is actually editable.
+    wTourUtils.registerWebsitePreviewTour("website_form_editable_content", {
+        test: true,
+        url: "/",
+        edition: true,
+    }, [
+        {
+            ...wTourUtils.dragNDrop({id: "s_website_form", name: "Form"}),
+            run: "drag_and_drop iframe #wrap",
+        },
+        {
+            content: "Check that a form field is not editable",
+            extra_trigger: "iframe .s_website_form_field",
+            trigger: "iframe section.s_website_form input",
+            run: function () {
+                if (this.$anchor[0].isContentEditable) {
+                    console.error("A form field should not be editable.");
+                }
+            },
+        },
+        {
+            content: "Go back to blocks",
+            trigger: ".o_we_add_snippet_btn",
+        },
+        wTourUtils.dragNDrop({id: "s_three_columns", name: "Columns"}),
+        {
+            content: "Select the first column",
+            trigger: "iframe .s_three_columns .row > :nth-child(1)",
+        },
+        {
+            content: "Drag and drop the selected column inside the form",
+            trigger: "iframe .o_overlay_move_options .ui-draggable-handle",
+            run: "drag_and_drop iframe section.s_website_form",
+        },
+        {
+            content: "Click on the text inside the dropped form column",
+            trigger: "iframe section.s_website_form h3.card-title",
+            run: "dblclick",
+        },
+        {   // Simulate a user interaction with the editable content.
+            content: "Update the text inside the form column",
+            trigger: "iframe section.s_website_form h3.card-title",
+            run: "keydown 65 66 67",
+        },
+        {
+            content: "Check that the new text value was correctly set",
+            trigger: "iframe section.s_website_form h3:containsExact(ABC)",
+            run: () => null, // it's a check
+        },
+        {   content: "Remove the dropped column",
+            trigger: "iframe .oe_overlay.oe_active .oe_snippet_remove",
+            run: "click",
+        },
+        ...wTourUtils.clickOnSave(),
+    ]);
+
+    wTourUtils.registerWebsitePreviewTour("website_form_special_characters", {
+        test: true,
+        url: "/",
+        edition: true,
+    }, [
+        {
+            ...wTourUtils.dragNDrop({id: "s_website_form", name: "Form"}),
+            run: "drag_and_drop iframe #wrap",
+        },
+        {
+            content: "Select form by clicking on an input field",
+            extra_trigger: "iframe .s_website_form_field",
+            trigger: "iframe section.s_website_form input",
+        },
+        ...addCustomField("char", "text", `Test1"'`, false),
+        ...addCustomField("char", "text", 'Test2`\\', false),
+        ...wTourUtils.clickOnSave(),
+        ...essentialFieldsForDefaultFormFillInSteps,
+        {
+            content: "Complete 'Your Question' field",
+            trigger: "iframe textarea[name='description']",
+            run: "text test",
+        }, {
+            content: "Complete the first added field",
+            trigger: "iframe input[name='Test1&quot;&apos;']",
+            run: "text test1",
+        }, {
+            content: "Complete the second added field",
+            trigger: "iframe input[name='Test2&lsquo;&bsol;']",
+            run: "text test2",
+        }, {
+            content: "Click on 'Submit'",
+            trigger: "iframe a.s_website_form_send",
+        }, {
+            content: "Check the form was again sent (success page without form)",
+            trigger: "iframe body:not(:has([data-snippet='s_website_form'])) .fa-check-circle",
+            run: () => null,
+        },
     ]);
 
     return {};

@@ -4,7 +4,7 @@
 # 
 # Translators:
 # Martin Trigaux, 2023
-# Larissa Manderfeld, 2023
+# Larissa Manderfeld, 2024
 # 
 msgid ""
 msgstr ""
@@ -12,7 +12,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-09-20 09:02+0000\n"
 "PO-Revision-Date: 2022-09-22 05:53+0000\n"
-"Last-Translator: Larissa Manderfeld, 2023\n"
+"Last-Translator: Larissa Manderfeld, 2024\n"
 "Language-Team: German (https://app.transifex.com/odoo/teams/41243/de/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -85,12 +85,15 @@ msgstr "Hmmm..."
 #, python-format
 msgid ""
 "I am a simple bot, but if that's a dog, he is the cutest 😊 "
-"<br/>Congratulations, you finished this tour. You can now <b>close this chat"
-" window</b>. Enjoy discovering Odoo."
+"<br/>Congratulations, you finished this tour. You can now <b>close this "
+"conversation</b> or start the tour again with typing <span "
+"class=\"o_odoobot_command\">start the tour</span>. Enjoy discovering Odoo!"
 msgstr ""
 "Ich bin ein einfacher Bot, aber wenn das ein Hund ist, ist er der süßeste 😊 "
-"<br/>Glückwunsch, Sie haben diese Tour beendet. Sie können dieses <b>Chat-"
-"Fenster jetzt schließen</b>. Viel Spaß beim Entdecken von Odoo."
+"<br/>Glückwunsch, Sie haben diese Tour beendet. Sie können diese "
+"<b>Unterhaltung nun schließen</b> oder die Tour erneut starten, indem Sie "
+"<span class=\"o_odoobot_command\">Tour starten</span> eingeben. Viel Spaß "
+"beim Entdecken von Odoo."
 
 #. module: mail_bot
 #: code:addons/mail_bot/models/mail_bot.py:0
@@ -159,22 +162,22 @@ msgstr "Odoobot Fehlgeschlagen"
 #. module: mail_bot
 #: model:ir.model.fields.selection,name:mail_bot.selection__res_users__odoobot_state__onboarding_attachement
 msgid "Onboarding attachment"
-msgstr "Einführung Anhang"
+msgstr "Anhang für Einführung"
 
 #. module: mail_bot
 #: model:ir.model.fields.selection,name:mail_bot.selection__res_users__odoobot_state__onboarding_command
 msgid "Onboarding command"
-msgstr "Einführung Befehl"
+msgstr "Befehl für Einführung"
 
 #. module: mail_bot
 #: model:ir.model.fields.selection,name:mail_bot.selection__res_users__odoobot_state__onboarding_emoji
 msgid "Onboarding emoji"
-msgstr "Emoji für Einführungsphase"
+msgstr "Emoji für Einführung"
 
 #. module: mail_bot
 #: model:ir.model.fields.selection,name:mail_bot.selection__res_users__odoobot_state__onboarding_ping
 msgid "Onboarding ping"
-msgstr "Einführung Ping"
+msgstr "Ping für Einführung"
 
 #. module: mail_bot
 #: code:addons/mail_bot/models/mail_bot.py:0
@@ -250,8 +253,8 @@ msgid ""
 "attention. <b>Try to ping me using</b> <span "
 "class=\"o_odoobot_command\">@OdooBot</span> in a sentence."
 msgstr ""
-"Wow, Sie sind ein Naturtalent!<br/>Pingen Sie jemanden an (@Benutzername) "
-",um auf sich aufmerksam zu machen. <b>Versuchen Sie, mich anzupingen, indem "
+"Wow, Sie sind ein Naturtalent!<br/>Pingen Sie jemanden an (@Benutzername), "
+"um auf sich aufmerksam zu machen. <b>Versuchen Sie, mich anzupingen, indem "
 "Sie</b> <span class=\"o_odoobot_command\">@OdooBot</span> in einem Satz "
 "verwenden."
 
@@ -269,7 +272,7 @@ msgstr ""
 #: code:addons/mail_bot/models/mail_bot.py:0
 #, python-format
 msgid "fuck"
-msgstr "Scheiße"
+msgstr "Mist"
 
 #. module: mail_bot
 #: code:addons/mail_bot/models/mail_bot.py:0

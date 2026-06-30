@@ -40,7 +40,7 @@ class PricelistItem(models.Model):
     min_quantity = fields.Float(
         string="Min. Quantity",
         default=0,
-        digits='Product Unit Of Measure',
+        digits='Product Unit of Measure',
         help="For the rule to apply, bought/sold quantity must be greater "
              "than or equal to the minimum quantity specified in this field.\n"
              "Expressed in the default unit of measure of the product.")
@@ -148,7 +148,7 @@ class PricelistItem(models.Model):
             elif item.product_tmpl_id and item.applied_on == '1_product':
                 item.name = _("Product: %s") % (item.product_tmpl_id.display_name)
             elif item.product_id and item.applied_on == '0_product_variant':
-                item.name = _("Variant: %s") % (item.product_id.with_context(display_default_code=False).display_name)
+                item.name = _("Variant: %s") % (item.product_id.display_name)
             else:
                 item.name = _("All Products")
 
@@ -273,17 +273,24 @@ class PricelistItem(models.Model):
     @api.model_create_multi
     def create(self, vals_list):
         for values in vals_list:
-            if values.get('applied_on', False):
-                # Ensure item consistency for later searches.
-                applied_on = values['applied_on']
-                if applied_on == '3_global':
-                    values.update(dict(product_id=None, product_tmpl_id=None, categ_id=None))
-                elif applied_on == '2_product_category':
-                    values.update(dict(product_id=None, product_tmpl_id=None))
-                elif applied_on == '1_product':
-                    values.update(dict(product_id=None, categ_id=None))
-                elif applied_on == '0_product_variant':
-                    values.update(dict(categ_id=None))
+            if not values.get('applied_on'):
+                values['applied_on'] = (
+                    '0_product_variant' if values.get('product_id') else
+                    '1_product' if values.get('product_tmpl_id') else
+                    '2_product_category' if values.get('categ_id') else
+                    '3_global'
+                )
+
+            # Ensure item consistency for later searches.
+            applied_on = values['applied_on']
+            if applied_on == '3_global':
+                values.update(dict(product_id=None, product_tmpl_id=None, categ_id=None))
+            elif applied_on == '2_product_category':
+                values.update(dict(product_id=None, product_tmpl_id=None))
+            elif applied_on == '1_product':
+                values.update(dict(product_id=None, categ_id=None))
+            elif applied_on == '0_product_variant':
+                values.update(dict(categ_id=None))
         return super().create(vals_list)
 
     def write(self, values):

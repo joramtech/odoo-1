@@ -282,6 +282,29 @@ QUnit.module("SettingsFormView", (hooks) => {
         );
     });
 
+    QUnit.test("don't show noContentHelper if no search is done", async function (assert) {
+        await makeView({
+            type: "form",
+            resModel: "res.config.settings",
+            serverData,
+            arch: `
+                <form string="Settings" class="oe_form_configuration o_base_settings" js_class="base_settings">
+                    <div class="o_setting_container">
+                        <div class="settings">
+                            <div class="app_settings_block" string="Settings" data-key="settings">
+                                <h2>Setting title</h2>
+                                <h3 class="o_setting_tip">Settings will appear below</h3>
+                            </div>
+                        </div>
+                    </div>
+                </form>`,
+        });
+        assert.isNotVisible(
+            target.querySelector(".o_nocontent_help"),
+            "record not found message shown"
+        );
+    });
+
     QUnit.test("unhighlight section not matching anymore", async function (assert) {
         await makeView({
             type: "form",
@@ -1768,7 +1791,7 @@ QUnit.module("SettingsFormView", (hooks) => {
             <SettingsPage slots="{NoContentHelper:props.slots.NoContentHelper}" initialTab="props.initialApp" t-slot-scope="settings" modules="[{&quot;key&quot;:&quot;crm&quot;,&quot;string&quot;:&quot;CRM&quot;,&quot;imgurl&quot;:&quot;/crm/static/description/icon.png&quot;,&quot;isVisible&quot;:false}]" class="'settings'">
                 <SettingsApp t-props="{&quot;key&quot;:&quot;crm&quot;,&quot;string&quot;:&quot;CRM&quot;,&quot;imgurl&quot;:&quot;/crm/static/description/icon.png&quot;,&quot;isVisible&quot;:false}" selectedTab="settings.selectedTab" class="'app_settings_block'">
                     <FormLabel id="'display_name'" fieldName="'display_name'" record="props.record" fieldInfo="props.archInfo.fieldNodes['display_name']" className="&quot;highhopes&quot;" string="\`My&quot; little '  Label\`"/>
-                    <Field id="'display_name'" name="'display_name'" record="props.record" fieldInfo="props.archInfo.fieldNodes['display_name']" setDirty.alike="props.setFieldAsDirty"/>
+                    <Field id="'display_name'" name="'display_name'" record="props.record" fieldInfo="props.archInfo.fieldNodes['display_name']" readonly="props.archInfo.activeActions?.edit === false and !props.record.isNew" setDirty.alike="props.setFieldAsDirty"/>
                 </SettingsApp>
             </SettingsPage>
         </div>`;
@@ -1819,7 +1842,7 @@ QUnit.module("SettingsFormView", (hooks) => {
 
         const expectedCompiled = `
             <HighlightText originalText="\`this is Baz value: \`"/>
-            <Field id="'baz'" name="'baz'" record="props.record" fieldInfo="props.archInfo.fieldNodes['baz']" setDirty.alike="props.setFieldAsDirty"/>
+            <Field id="'baz'" name="'baz'" record="props.record" fieldInfo="props.archInfo.fieldNodes['baz']" readonly="props.archInfo.activeActions?.edit === false and !props.record.isNew" setDirty.alike="props.setFieldAsDirty"/>
             <HighlightText originalText="\` and this is the after text\`"/>`;
         assert.areEquivalent(
             compiled.querySelector("Setting div.o_setting_right_pane div.text-muted").innerHTML,

@@ -14,17 +14,18 @@
 # Veikko Väätäjä <veikko.vaataja@gmail.com>, 2022
 # Tuomo Aura <tuomo.aura@web-veistamo.fi>, 2022
 # Miku Laitinen <miku.laitinen@gmail.com>, 2022
-# Martin Trigaux, 2022
 # Jarmo Kortetjärvi <jarmo.kortetjarvi@gmail.com>, 2022
-# Ossi Mantylahti <ossi.mantylahti@obs-solutions.fi>, 2023
+# Martin Trigaux, 2024
+# Ossi Mantylahti <ossi.mantylahti@obs-solutions.fi>, 2024
+# Jessica Jakara, 2025
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 16.0+e\n"
+"Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-12-15 12:44+0000\n"
+"POT-Creation-Date: 2025-05-08 20:35+0000\n"
 "PO-Revision-Date: 2022-09-22 05:55+0000\n"
-"Last-Translator: Ossi Mantylahti <ossi.mantylahti@obs-solutions.fi>, 2023\n"
+"Last-Translator: Jessica Jakara, 2025\n"
 "Language-Team: Finnish (https://app.transifex.com/odoo/teams/41243/fi/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -134,21 +135,6 @@ msgstr "+ Lisää toinen sääntö"
 #, python-format
 msgid "- [optional]"
 msgstr "- [valinnainen]"
-
-#. module: spreadsheet
-#. odoo-javascript
-#: code:addons/spreadsheet/static/src/o_spreadsheet/o_spreadsheet.xml:0
-#, python-format
-msgid ""
-"/** Font Awesome by Dave Gandy\n"
-" *  http://fontawesome.io/\n"
-" *  https://fontawesome.com/license\n"
-" */"
-msgstr ""
-"/** Font Awesome by Dave Gandy\n"
-" *  http://fontawesome.io/\n"
-" *  https://fontawesome.com/license\n"
-" */"
 
 #. module: spreadsheet
 #. odoo-javascript
@@ -416,6 +402,7 @@ msgstr "Käytetään alueeseen"
 #. module: spreadsheet
 #. odoo-javascript
 #: code:addons/spreadsheet/static/src/assets_backend/constants.js:0
+#: code:addons/spreadsheet/static/src/o_spreadsheet/o_spreadsheet.js:0
 #, python-format
 msgid "April"
 msgstr "Huhtikuu"
@@ -445,6 +432,7 @@ msgstr "Nouseva (A ⟶ Ö)"
 #. module: spreadsheet
 #. odoo-javascript
 #: code:addons/spreadsheet/static/src/assets_backend/constants.js:0
+#: code:addons/spreadsheet/static/src/o_spreadsheet/o_spreadsheet.js:0
 #, python-format
 msgid "August"
 msgstr "Elokuu"
@@ -1045,6 +1033,13 @@ msgstr "Luo suodatin"
 
 #. module: spreadsheet
 #. odoo-javascript
+#: code:addons/spreadsheet/static/src/o_spreadsheet/o_spreadsheet.xml:0
+#, python-format
+msgid "Cumulative data"
+msgstr "Kumulatiiviset tiedot"
+
+#. module: spreadsheet
+#. odoo-javascript
 #: code:addons/spreadsheet/static/src/o_spreadsheet/o_spreadsheet.js:0
 #, python-format
 msgid "Cumulative interest paid over a set of periods."
@@ -1253,6 +1248,7 @@ msgstr "Päivät kuponkikaudella, joka sisältää maksupäivän."
 #. module: spreadsheet
 #. odoo-javascript
 #: code:addons/spreadsheet/static/src/assets_backend/constants.js:0
+#: code:addons/spreadsheet/static/src/o_spreadsheet/o_spreadsheet.js:0
 #, python-format
 msgid "December"
 msgstr "Joulukuu"
@@ -1440,6 +1436,7 @@ msgstr "Muokkaa"
 
 #. module: spreadsheet
 #. odoo-javascript
+#: code:addons/spreadsheet/static/src/o_spreadsheet/o_spreadsheet.js:0
 #: code:addons/spreadsheet/static/src/o_spreadsheet/o_spreadsheet.xml:0
 #, python-format
 msgid "Edit link"
@@ -1504,6 +1501,7 @@ msgstr "Kahden päivämäärän välisten vuosien tarkka lukumäärä."
 #. module: spreadsheet
 #. odoo-javascript
 #: code:addons/spreadsheet/static/src/assets_backend/constants.js:0
+#: code:addons/spreadsheet/static/src/o_spreadsheet/o_spreadsheet.js:0
 #, python-format
 msgid "February"
 msgstr "Helmikuu"
@@ -1667,6 +1665,13 @@ msgstr "Kaava"
 #, python-format
 msgid "Freeze"
 msgstr "Jäädytä"
+
+#. module: spreadsheet
+#. odoo-javascript
+#: code:addons/spreadsheet/static/src/o_spreadsheet/o_spreadsheet.js:0
+#, python-format
+msgid "Friday"
+msgstr "Perjantai"
 
 #. module: spreadsheet
 #. odoo-javascript
@@ -2020,6 +2025,13 @@ msgstr "Jos kelvollista vastaavuutta ei löydy, palauta tämä arvo."
 #, python-format
 msgid "Increase decimal places"
 msgstr "Lisää desimaaleja"
+
+#. module: spreadsheet
+#. odoo-javascript
+#: code:addons/spreadsheet/static/src/o_spreadsheet/o_spreadsheet.js:0
+#, python-format
+msgid "Index out of range."
+msgstr "Indeksi alueen ulkopuolella."
 
 #. module: spreadsheet
 #. odoo-javascript
@@ -2403,6 +2415,7 @@ msgstr "Kursiivi"
 #. module: spreadsheet
 #. odoo-javascript
 #: code:addons/spreadsheet/static/src/assets_backend/constants.js:0
+#: code:addons/spreadsheet/static/src/o_spreadsheet/o_spreadsheet.js:0
 #, python-format
 msgid "January"
 msgstr "Tammikuu"
@@ -2410,6 +2423,7 @@ msgstr "Tammikuu"
 #. module: spreadsheet
 #. odoo-javascript
 #: code:addons/spreadsheet/static/src/assets_backend/constants.js:0
+#: code:addons/spreadsheet/static/src/o_spreadsheet/o_spreadsheet.js:0
 #, python-format
 msgid "July"
 msgstr "Heinäkuu"
@@ -2417,6 +2431,7 @@ msgstr "Heinäkuu"
 #. module: spreadsheet
 #. odoo-javascript
 #: code:addons/spreadsheet/static/src/assets_backend/constants.js:0
+#: code:addons/spreadsheet/static/src/o_spreadsheet/o_spreadsheet.js:0
 #, python-format
 msgid "June"
 msgstr "Kesäkuu"
@@ -2607,6 +2622,7 @@ msgstr "Alemman käännepisteen on oltava pienempi kuin ylemmän käännepisteen
 #. module: spreadsheet
 #. odoo-javascript
 #: code:addons/spreadsheet/static/src/assets_backend/constants.js:0
+#: code:addons/spreadsheet/static/src/o_spreadsheet/o_spreadsheet.js:0
 #, python-format
 msgid "March"
 msgstr "Maaliskuu"
@@ -2663,6 +2679,7 @@ msgstr "Maksimiarvo numeerisessa tietokokonaisuudessa."
 #. module: spreadsheet
 #. odoo-javascript
 #: code:addons/spreadsheet/static/src/assets_backend/constants.js:0
+#: code:addons/spreadsheet/static/src/o_spreadsheet/o_spreadsheet.js:0
 #, python-format
 msgid "May"
 msgstr "Toukokuu"
@@ -2801,6 +2818,13 @@ msgstr "Muutettu sisäinen korkokanta."
 #, python-format
 msgid "Modulo (remainder) operator."
 msgstr "Modulo-operaattori (jäännösoperaattori)."
+
+#. module: spreadsheet
+#. odoo-javascript
+#: code:addons/spreadsheet/static/src/o_spreadsheet/o_spreadsheet.js:0
+#, python-format
+msgid "Monday"
+msgstr "Maanantai"
 
 #. module: spreadsheet
 #. odoo-javascript
@@ -2956,6 +2980,7 @@ msgstr ""
 #. module: spreadsheet
 #. odoo-javascript
 #: code:addons/spreadsheet/static/src/assets_backend/constants.js:0
+#: code:addons/spreadsheet/static/src/o_spreadsheet/o_spreadsheet.js:0
 #, python-format
 msgid "November"
 msgstr "Marraskuu"
@@ -3067,6 +3092,7 @@ msgstr "Numeerinen keskiarvo tietokokonaisuudessa."
 #. module: spreadsheet
 #. odoo-javascript
 #: code:addons/spreadsheet/static/src/assets_backend/constants.js:0
+#: code:addons/spreadsheet/static/src/o_spreadsheet/o_spreadsheet.js:0
 #, python-format
 msgid "October"
 msgstr "Lokakuu"
@@ -3404,6 +3430,14 @@ msgstr "Palauttaa annetun loogisen arvon vastakohdan."
 #. odoo-javascript
 #: code:addons/spreadsheet/static/src/o_spreadsheet/o_spreadsheet.js:0
 #, python-format
+msgid "Returns the content of a cell, specified by row and column offset."
+msgstr ""
+"Palauttaa solun sisällön, joka on määritetty rivin ja sarakkeen siirtymällä."
+
+#. module: spreadsheet
+#. odoo-javascript
+#: code:addons/spreadsheet/static/src/o_spreadsheet/o_spreadsheet.js:0
+#, python-format
 msgid "Returns the error value #N/A."
 msgstr "Palauttaa virhearvon #N/A."
 
@@ -3532,6 +3566,13 @@ msgstr "Määritellyn solun rivinumero."
 #. module: spreadsheet
 #. odoo-javascript
 #: code:addons/spreadsheet/static/src/o_spreadsheet/o_spreadsheet.js:0
+#, python-format
+msgid "Saturday"
+msgstr "Lauantai"
+
+#. module: spreadsheet
+#. odoo-javascript
+#: code:addons/spreadsheet/static/src/o_spreadsheet/o_spreadsheet.js:0
 #: code:addons/spreadsheet/static/src/o_spreadsheet/o_spreadsheet.xml:0
 #, python-format
 msgid "Save"
@@ -3626,6 +3667,7 @@ msgstr "Valitse ajanjakso..."
 #. module: spreadsheet
 #. odoo-javascript
 #: code:addons/spreadsheet/static/src/assets_backend/constants.js:0
+#: code:addons/spreadsheet/static/src/o_spreadsheet/o_spreadsheet.js:0
 #, python-format
 msgid "September"
 msgstr "Syyskuu"
@@ -3872,6 +3914,13 @@ msgstr "Summaa alueen useiden kriteerien perusteella."
 
 #. module: spreadsheet
 #. odoo-javascript
+#: code:addons/spreadsheet/static/src/o_spreadsheet/o_spreadsheet.js:0
+#, python-format
+msgid "Sunday"
+msgstr "Sunnuntai"
+
+#. module: spreadsheet
+#. odoo-javascript
 #: code:addons/spreadsheet/static/src/o_spreadsheet/o_spreadsheet.xml:0
 #, python-format
 msgid "Symbol"
@@ -3932,6 +3981,20 @@ msgstr "Argumentti puuttuu. Anna arvo"
 #, python-format
 msgid "The base (%s) must be between 2 and 36 inclusive."
 msgstr "Perusluvun (%s) on oltava välillä 2 ja 36 (mukaan lukien)."
+
+#. module: spreadsheet
+#. odoo-javascript
+#: code:addons/spreadsheet/static/src/o_spreadsheet/o_spreadsheet.js:0
+#, python-format
+msgid "The base (%s) must be strictly positive."
+msgstr "Pohjan (%s) on oltava ehdottomasti positiivinen."
+
+#. module: spreadsheet
+#. odoo-javascript
+#: code:addons/spreadsheet/static/src/o_spreadsheet/o_spreadsheet.js:0
+#, python-format
+msgid "The base must be different from 1."
+msgstr "Pohjan on oltava eri kuin 1."
 
 #. module: spreadsheet
 #. odoo-javascript
@@ -4383,6 +4446,13 @@ msgstr "Elämän (%s) on oltava tiukasti positiivinen."
 #, python-format
 msgid "The logarithm of a number, base e (euler's number)."
 msgstr "Luvun logaritmi, perusta e (Eulerin luku)."
+
+#. module: spreadsheet
+#. odoo-javascript
+#: code:addons/spreadsheet/static/src/o_spreadsheet/o_spreadsheet.js:0
+#, python-format
+msgid "The logarithm of a number, for a given base."
+msgstr "Luvun logaritmi annetulla kantaluvulla."
 
 #. module: spreadsheet
 #. odoo-javascript
@@ -5083,6 +5153,7 @@ msgstr "Arvon (%s) on oltava positiivinen tai nolla."
 #. module: spreadsheet
 #. odoo-javascript
 #: code:addons/spreadsheet/static/src/o_spreadsheet/o_spreadsheet.js:0
+#: code:addons/spreadsheet/static/src/o_spreadsheet/o_spreadsheet.js:0
 #, python-format
 msgid "The value (%s) must be strictly positive."
 msgstr "Arvon (%s) on oltava ehdottomasti positiivinen."
@@ -5276,6 +5347,17 @@ msgstr ""
 
 #. module: spreadsheet
 #. odoo-javascript
+#: code:addons/spreadsheet/static/src/o_spreadsheet/o_spreadsheet.js:0
+#, python-format
+msgid ""
+"This function can only return a single cell value, not an array. Provide "
+"valid row and column indices."
+msgstr ""
+"Tämä funktio voi palauttaa vain yhden solun arvon, ei joukkoa. Anna "
+"kelvolliset rivi- ja sarakeindeksit."
+
+#. module: spreadsheet
+#. odoo-javascript
 #: code:addons/spreadsheet/static/src/currency/formulas.js:0
 #, python-format
 msgid ""
@@ -5310,6 +5392,13 @@ msgstr ""
 #, python-format
 msgid "Thresholds"
 msgstr "Kynnysarvot"
+
+#. module: spreadsheet
+#. odoo-javascript
+#: code:addons/spreadsheet/static/src/o_spreadsheet/o_spreadsheet.js:0
+#, python-format
+msgid "Thursday"
+msgstr "Torstai"
 
 #. module: spreadsheet
 #. odoo-javascript
@@ -5358,6 +5447,13 @@ msgstr "Käsittele etikettejä tekstinä"
 #, python-format
 msgid "Truncates a number."
 msgstr "Katkaisee numeron."
+
+#. module: spreadsheet
+#. odoo-javascript
+#: code:addons/spreadsheet/static/src/o_spreadsheet/o_spreadsheet.js:0
+#, python-format
+msgid "Tuesday"
+msgstr "Tiistai"
 
 #. module: spreadsheet
 #. odoo-javascript
@@ -5601,6 +5697,13 @@ msgid ""
 msgstr ""
 "Löysimme tietoja valintasi vierestä. Koska tätä tietoa ei valittu, sitä ei "
 "lajitella. Haluatko laajentaa valintaasi?"
+
+#. module: spreadsheet
+#. odoo-javascript
+#: code:addons/spreadsheet/static/src/o_spreadsheet/o_spreadsheet.js:0
+#, python-format
+msgid "Wednesday"
+msgstr "Keskiviikko"
 
 #. module: spreadsheet
 #. odoo-javascript

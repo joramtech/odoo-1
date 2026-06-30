@@ -371,7 +371,8 @@
                 @include o-grab-cursor;
 
                 .oe_snippet_thumbnail_title {
-                    display: block;
+                    @include o-text-overflow(block);
+                    white-space: normal;
                     padding: $o-we-sidebar-blocks-content-spacing / 2;
                     text-align: center;
                 }
@@ -383,6 +384,7 @@
                 &.o_snippet_install {
                     .btn.o_install_btn {
                         @include o-position-absolute($top: 10px);
+                        @include text-truncate();
                     }
 
                     &:not(:hover) .btn.o_install_btn {
@@ -413,7 +415,7 @@
                 min-width: 0; // Ensure text-overflow on flex children
             }
             .oe_snippet_thumbnail_title {
-                @include o-text-overflow(block);
+                white-space: nowrap;
             }
             .oe_snippet_thumbnail_img {
                 flex-shrink: 0;
@@ -443,6 +445,7 @@
                     @extend %we-generic-clickable;
                     cursor: pointer;
                     flex: 1 1 auto;
+                    padding: 0 $o-we-sidebar-content-field-button-group-button-spacing;
                     line-height: 17px;
                     text-align: center;
 
@@ -521,7 +524,11 @@
                     &.o_long_title {
                         width: fit-content !important;
                         padding-right: 10px !important;
+                        flex: 1 1 auto;
                     }
+                }
+                we-button .o_switch {
+                    min-width: fit-content;
                 }
                 .highlighted-text {
                     color: white;
@@ -530,11 +537,11 @@
                 }
                 .dropdown {
                     position: unset;
-                    width: -webkit-fill-available;
+                    width: 100%;
 
                     .dropdown-toggle {
                         padding: 0;
-                        width: inherit;
+                        width: 100%;
 
                         &::after {
                             display: none;
@@ -543,8 +550,17 @@
                     .dropdown-menu.show {
                         position: absolute !important;
                         padding: 0;
+                        width: 100%;
+                        border-color: $o-we-dropdown-border-color;
+
+                        &[data-popper-placement$="start"] {
+                            left: -$o-we-sidebar-content-padding-base !important;
+                        }
 
                         we-button:not(.fa) {
+                            display: flex;
+                            align-items: center;
+                            height: $o-we-sidebar-content-field-dropdown-item-height;
                             text-align: left;
                             font-family: $o-we-font-family;
                             font-size: 12px;
@@ -553,6 +569,10 @@
                             div {
                                 width: 100%;
                             }
+                        }
+
+                        .dropdown-item::before {
+                            display: none;
                         }
                     }
                 }
@@ -751,6 +771,13 @@
 
         we-title {
             display: block;
+        }
+
+        // TODO in master, remove the text-transform rule entirely and rely on
+        // developers writing their label with the intended "design". The
+        // "where" change here was added as a way to minimize the impact of this
+        // fix in stable. That CSS style was breaking translations.
+        we-title:where(:lang(en)) {
             text-transform: capitalize;
         }
 
@@ -1588,6 +1615,14 @@
                     font-weight: 600;
                 }
             }
+            // For layout having button-group + we-select, to avoid the long
+            // text to overflow the row.
+            &:has(div > we-button-group + we-select.o_grid) {
+                we-button-group we-selection-items {
+                    display: grid !important;
+                    grid-template-columns: auto auto;
+                }
+            }
         }
 
         %o-we-inline {
@@ -2226,6 +2261,7 @@
 
                 &.readonly {
                     cursor: auto !important;
+                    pointer-events: none;
 
                     &:after {
                         display: none !important;
@@ -2355,6 +2391,7 @@
                 transform: none !important;
                 max-width: unset !important;
                 max-height: unset !important;
+                z-index: 0 !important;
             }
         }
     }

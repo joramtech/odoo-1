@@ -66,7 +66,7 @@ class WebsiteSnippetFilter(models.Model):
     @api.model
     def _get_products(self, mode, context):
         dynamic_filter = context.get('dynamic_filter')
-        handler = getattr(self, '_get_products_%s' % mode, self._get_products_latest_sold)
+        handler = getattr(self.sudo(False), '_get_products_%s' % mode, self.sudo(False)._get_products_latest_sold)
         website = self.env['website'].get_current_website()
         search_domain = context.get('search_domain')
         limit = context.get('limit')
@@ -170,6 +170,8 @@ class WebsiteSnippetFilter(models.Model):
             excluded_products |= current_template.product_variant_ids
             included_products = current_template.alternative_product_ids.product_variant_ids
             products = included_products - excluded_products
+            if website.prevent_zero_price_sale:
+                products = products.filtered(lambda p: p._get_contextual_price())
             if products:
                 domain = expression.AND([
                     domain,

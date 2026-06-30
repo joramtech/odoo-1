@@ -2,7 +2,6 @@
 
 import { browser } from "@web/core/browser/browser";
 import { CheckBox } from "@web/core/checkbox/checkbox";
-import { Domain } from "@web/core/domain";
 import { Dropdown } from "@web/core/dropdown/dropdown";
 import { DropdownItem } from "@web/core/dropdown/dropdown_item";
 import { getActiveHotkey } from "@web/core/hotkeys/hotkey_service";
@@ -14,7 +13,7 @@ import { useSortable } from "@web/core/utils/sortable";
 import { getTabableElements } from "@web/core/utils/ui";
 import { Field } from "@web/views/fields/field";
 import { getTooltipInfo } from "@web/views/fields/field_tooltip";
-import { getClassNameFromDecoration } from "@web/views/utils";
+import { evalDomain, getClassNameFromDecoration } from "@web/views/utils";
 import { ViewButton } from "@web/views/view_button/view_button";
 import { useBounceButton } from "@web/views/view_hook";
 import { Widget } from "@web/views/widgets/widget";
@@ -117,22 +116,6 @@ export class ListRenderer extends Component {
             this.allColumns = nextProps.archInfo.columns;
             this.state.columns = this.getActiveColumns(nextProps.list);
         });
-        onPatched(() => {
-            const editedRecord = this.props.list.editedRecord;
-            if (editedRecord && this.activeRowId !== editedRecord.id) {
-                if (this.cellToFocus && this.cellToFocus.record === editedRecord) {
-                    const column = this.cellToFocus.column;
-                    const forward = this.cellToFocus.forward;
-                    this.focusCell(column, forward);
-                } else if (this.lastEditedCell) {
-                    this.focusCell(this.lastEditedCell.column, true);
-                } else {
-                    this.focusCell(this.state.columns[0]);
-                }
-            }
-            this.cellToFocus = null;
-            this.lastEditedCell = null;
-        });
         let dataRowId;
         this.rootRef = useRef("root");
         this.resequencePromise = Promise.resolve();
@@ -200,6 +183,22 @@ export class ListRenderer extends Component {
         useExternalListener(window, "resize", () => {
             this.columnWidths = null;
             this.freezeColumnWidths();
+        });
+        onPatched(() => {
+            const editedRecord = this.props.list.editedRecord;
+            if (editedRecord && this.activeRowId !== editedRecord.id) {
+                if (this.cellToFocus && this.cellToFocus.record === editedRecord) {
+                    const column = this.cellToFocus.column;
+                    const forward = this.cellToFocus.forward;
+                    this.focusCell(column, forward);
+                } else if (this.lastEditedCell) {
+                    this.focusCell(this.lastEditedCell.column, true);
+                } else {
+                    this.focusCell(this.state.columns[0]);
+                }
+            }
+            this.cellToFocus = null;
+            this.lastEditedCell = null;
         });
         this.isRTL = localization.direction === "rtl";
     }
@@ -538,6 +537,11 @@ export class ListRenderer extends Component {
                 continue;
             }
             const { rawAttrs, widget } = this.props.list.activeFields[fieldName];
+            const func =
+                (rawAttrs.sum && "sum") ||
+                (rawAttrs.avg && "avg") ||
+                (rawAttrs.max && "max") ||
+                (rawAttrs.min && "min");
             let currencyId;
             if (type === "monetary" || widget === "monetary") {
                 const currencyField =
@@ -548,7 +552,7 @@ export class ListRenderer extends Component {
                     currencyField in this.props.list.activeFields &&
                     values[0][currencyField] &&
                     values[0][currencyField][0];
-                if (currencyId) {
+                if (currencyId && func) {
                     const sameCurrency = values.every(
                         (value) => currencyId === value[currencyField][0]
                     );
@@ -561,11 +565,6 @@ export class ListRenderer extends Component {
                     }
                 }
             }
-            const func =
-                (rawAttrs.sum && "sum") ||
-                (rawAttrs.avg && "avg") ||
-                (rawAttrs.max && "max") ||
-                (rawAttrs.min && "min");
             if (func) {
                 let aggregateValue = 0;
                 if (func === "max") {
@@ -654,7 +653,7 @@ export class ListRenderer extends Component {
     }
 
     shouldReverseHeader(column) {
-        return this.isNumericColumn(column) && (!this.isRTL);
+        return this.isNumericColumn(column) && !this.isRTL;
     }
 
     isSortable(column) {
@@ -784,7 +783,7 @@ export class ListRenderer extends Component {
     }
 
     evalModifier(modifier, record) {
-        return !!(modifier && new Domain(modifier).contains(record.evalContext));
+        return evalDomain(modifier, record.evalContext);
     }
 
     getGroupDisplayName(group) {
@@ -895,7 +894,7 @@ export class ListRenderer extends Component {
             this.allColumns.forEach((col) => {
                 this.optionalActiveFields[col.name] = optionalActiveFields.includes(col.name);
             });
-        } else {
+        } else if (optionalActiveFields !== "") {
             this.allColumns.forEach((col) => {
                 this.optionalActiveFields[col.name] = col.optional === "show";
             });
@@ -1188,14 +1187,10 @@ export class ListRenderer extends Component {
         const isDirty = record.isDirty || this.lastIsDirty;
         const isEnterBehavior = hotkey === "enter" && (!record.canBeAbandoned || isDirty);
         const isTabBehavior = hotkey === "tab" && !record.canBeAbandoned && isDirty;
-        if (isEnterBehavior && !record.checkValidity()) {
-            return true;
-        }
         if (
             isLastOfGroup &&
             this.canCreate &&
             editable === "bottom" &&
-            record.checkValidity() &&
             (isEnterBehavior || isTabBehavior)
         ) {
             this.add({ group });
@@ -1260,17 +1255,15 @@ export class ListRenderer extends Component {
             case "tab": {
                 const index = list.records.indexOf(record);
                 const lastIndex = topReCreate ? 0 : list.records.length - 1;
-                if (index === lastIndex) {
+                if (index === lastIndex || index === list.records.length - 1) {
                     if (this.displayRowCreates) {
                         if (record.isNew && !record.isDirty) {
                             list.unselectRecord(true);
                             return false;
                         }
                         // add a line
-                        if (record.checkValidity()) {
-                            const { context } = this.creates[0];
-                            this.add({ context });
-                        }
+                        const { context } = this.creates[0];
+                        this.add({ context });
                     } else if (
                         this.canCreate &&
                         !record.canBeAbandoned &&
@@ -1624,7 +1617,7 @@ export class ListRenderer extends Component {
             return;
         }
         // Legacy DatePicker
-        if (target.closest(".daterangepicker")) {
+        if (target.closest(".daterangepicker") || ev.isFromDateRangePicker) {
             return;
         }
         // Legacy autocomplete
@@ -1723,7 +1716,8 @@ export class ListRenderer extends Component {
         const resizeHeader = (ev) => {
             ev.preventDefault();
             ev.stopPropagation();
-            const delta = ev.clientX - initialX;
+            let delta = ev.clientX - initialX;
+            delta = this.isRTL ? -delta : delta;
             const newWidth = Math.max(10, initialWidth + delta);
             const tableDelta = newWidth - initialWidth;
             th.style.width = `${Math.floor(newWidth)}px`;
@@ -1817,11 +1811,14 @@ export class ListRenderer extends Component {
         }
         element.classList.remove("o_row_draggable");
         const refId = previous ? previous.dataset.id : null;
-        this.resequencePromise = this.props.list.resequence(dataRowId, refId, {
-            handleField: this.props.archInfo.handleField,
-        });
-        await this.resequencePromise;
-        element.classList.add("o_row_draggable");
+        try {
+            this.resequencePromise = this.props.list.resequence(dataRowId, refId, {
+                handleField: this.props.archInfo.handleField,
+            });
+            await this.resequencePromise;
+        } finally {
+            element.classList.add("o_row_draggable");
+        }
     }
 
     /**

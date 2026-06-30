@@ -45,8 +45,9 @@ class AccountInvoiceReport(models.Model):
     invoice_date_due = fields.Date(string='Due Date', readonly=True)
     account_id = fields.Many2one('account.account', string='Revenue/Expense Account', readonly=True, domain=[('deprecated', '=', False)])
     price_subtotal = fields.Float(string='Untaxed Total', readonly=True)
-    price_total = fields.Float(string='Total', readonly=True)
+    price_total = fields.Float(string='Total in Currency', readonly=True)
     price_average = fields.Float(string='Average Price', readonly=True, group_operator="avg")
+    currency_id = fields.Many2one('res.currency', string='Currency', readonly=True)
 
     _depends = {
         'account.move': [
@@ -103,7 +104,8 @@ class AccountInvoiceReport(models.Model):
                    -- convert to template uom
                    * (NULLIF(COALESCE(uom_line.factor, 1), 0.0) / NULLIF(COALESCE(uom_template.factor, 1), 0.0)),
                    0.0) * currency_table.rate                               AS price_average,
-                COALESCE(partner.country_id, commercial_partner.country_id) AS country_id
+                COALESCE(partner.country_id, commercial_partner.country_id) AS country_id,
+                line.currency_id                                            AS currency_id
         '''
 
     @api.model
@@ -130,6 +132,30 @@ class AccountInvoiceReport(models.Model):
                 AND line.account_id IS NOT NULL
                 AND line.display_type = 'product'
         '''
+
+    @api.model
+    def read_group(self, domain, fields, groupby, offset=0, limit=None, orderby=False, lazy=True):
+        """
+        This is a hack to allow us to correctly calculate the average price.
+        """
+        set_fields = set(fields)
+
+        if 'price_average:avg' in fields:
+            set_fields.add('quantity:sum')
+            set_fields.add('price_subtotal:sum')
+
+        res = super().read_group(domain, list(set_fields), groupby, offset, limit, orderby, lazy)
+
+        if 'price_average:avg' in fields:
+            for data in res:
+                data['price_average'] = data['price_subtotal'] / data['quantity'] if data['quantity'] else 0
+
+                if 'quantity:sum' not in fields:
+                    del data['quantity']
+                if 'price_subtotal:sum' not in fields:
+                    del data['price_subtotal']
+
+        return res
 
 
 class ReportInvoiceWithoutPayment(models.AbstractModel):

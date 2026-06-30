@@ -42,6 +42,11 @@ class ResUsers(models.Model):
         return super(ResUsers, self)._get_login_domain(login) + website.website_domain()
 
     @api.model
+    def _get_email_domain(self, email):
+        website = self.env['website'].get_current_website()
+        return super()._get_email_domain(email) + website.website_domain()
+
+    @api.model
     def _get_login_order(self):
         return 'website_id, ' + super(ResUsers, self)._get_login_order()
 
@@ -76,6 +81,10 @@ class ResUsers(models.Model):
         uid = super(ResUsers, cls).authenticate(db, login, password, user_agent_env)
         if uid and visitor_pre_authenticate_sudo:
             env = api.Environment(request.env.cr, uid, {})
+            # user may not always exist in request cursor for auto-provisioning modules like LDAP
+            if not env.user.exists():
+                return uid
+
             user_partner = env.user.partner_id
             visitor_current_user_sudo = env['website.visitor'].sudo().search([
                 ('partner_id', '=', user_partner.id)

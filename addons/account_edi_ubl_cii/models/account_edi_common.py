@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
 
 from odoo import _, models, Command
+from odoo.addons.base.models.res_bank import sanitize_account_number
 from odoo.tools import float_repr
 from odoo.exceptions import UserError, ValidationError
 from odoo.tools.float_utils import float_round
-from odoo.tools.misc import formatLang
+from odoo.tools.misc import clean_context, formatLang
 
-from zeep import Client
+from odoo.tools.zeep import Client
 
 # -------------------------------------------------------------------------
 # UNIT OF MEASURE
@@ -20,7 +21,7 @@ UOM_TO_UNECE_CODE = {
     'uom.product_uom_hour': 'HUR',
     'uom.product_uom_ton': 'TNE',
     'uom.product_uom_meter': 'MTR',
-    'uom.product_uom_km': 'KTM',
+    'uom.product_uom_km': 'KMT',
     'uom.product_uom_cm': 'CMT',
     'uom.product_uom_litre': 'LTR',
     'uom.product_uom_cubic_meter': 'MTQ',
@@ -30,7 +31,7 @@ UOM_TO_UNECE_CODE = {
     'uom.product_uom_foot': 'FOT',
     'uom.product_uom_mile': 'SMI',
     'uom.product_uom_floz': 'OZA',
-    'uom.product_uom_qt': 'QT',
+    'uom.product_uom_qt': 'QTL',
     'uom.product_uom_gal': 'GLL',
     'uom.product_uom_cubic_inch': 'INQ',
     'uom.product_uom_cubic_foot': 'FTQ',
@@ -77,13 +78,13 @@ COUNTRY_EAS = {
     'SM': 9951,
     'TR': 9952,
     'VA': 9953,
-    'SE': 9955,
+    'SE': '0007',
     'FR': 9957,
     'NO': '0192',
     'SG': '0195',
     'AU': '0151',
     'NZ': '0088',
-    'FI': '0213',
+    'FI': '0216',
 }
 
 
@@ -102,13 +103,17 @@ class AccountEdiCommon(models.AbstractModel):
 
     def _get_uom_unece_code(self, line):
         """
-        list of codes: https://docs.peppol.eu/poacc/billing/3.0/codelist/UNECERec20/
-        or https://unece.org/fileadmin/DAM/cefact/recommendations/bkup_htm/add2c.htm (sorted by letter)
+        list of codes: https://docs.peppol.eu/poacc/billing/3.0/codelist/UNECERec20/ (sorted by letter)
         """
         xmlid = line.product_uom_id.get_external_id()
         if xmlid and line.product_uom_id.id in xmlid:
             return UOM_TO_UNECE_CODE.get(xmlid[line.product_uom_id.id], 'C62')
         return 'C62'
+
+    def _find_value(self, xpath, tree, nsmap=False):
+        # avoid 'TypeError: empty namespace prefix is not supported in XPath'
+        nsmap = nsmap or {k: v for k, v in tree.nsmap.items() if k is not None}
+        return self.env['account.edi.format']._find_value(xpath=xpath, xml_element=tree, namespaces=nsmap)
 
     # -------------------------------------------------------------------------
     # TAXES
@@ -157,17 +162,6 @@ class AccountEdiCommon(models.AbstractModel):
             if customer.zip[:2] in ('51', '52'):
                 return create_dict(tax_category_code='M')  # Ceuta & Mellila
 
-        # see: https://anskaffelser.dev/postaward/g3/spec/current/billing-3.0/norway/#_value_added_tax_norwegian_mva
-        if customer.country_id.code == 'NO':
-            if tax.amount == 25:
-                return create_dict(tax_category_code='S', tax_exemption_reason=_('Output VAT, regular rate'))
-            if tax.amount == 15:
-                return create_dict(tax_category_code='S', tax_exemption_reason=_('Output VAT, reduced rate, middle'))
-            if tax.amount == 11.11:
-                return create_dict(tax_category_code='S', tax_exemption_reason=_('Output VAT, reduced rate, raw fish'))
-            if tax.amount == 12:
-                return create_dict(tax_category_code='S', tax_exemption_reason=_('Output VAT, reduced rate, low'))
-
         if supplier.country_id == customer.country_id:
             if not tax or tax.amount == 0:
                 # in theory, you should indicate the precise law article
@@ -175,7 +169,7 @@ class AccountEdiCommon(models.AbstractModel):
             else:
                 return create_dict(tax_category_code='S')  # standard VAT
 
-        if supplier.country_id.code in european_economic_area:
+        if supplier.country_id.code in european_economic_area and supplier.vat:
             if tax.amount != 0:
                 # otherwise, the validator will complain because G and K code should be used with 0% tax
                 return create_dict(tax_category_code='S')
@@ -319,7 +313,7 @@ class AccountEdiCommon(models.AbstractModel):
                 # Normalize the name of the file : some e-fff emitters put the full path of the file
                 # (Windows or Linux style) and/or the name of the xml instead of the pdf.
                 # Get only the filename with a pdf extension.
-                name = attachment_name.text.split('\\')[-1].split('/')[-1].split('.')[0] + '.pdf'
+                name = (attachment_name.text or 'invoice').split('\\')[-1].split('/')[-1].split('.')[0] + '.pdf'
                 attachment = self.env['ir.attachment'].create({
                     'name': name,
                     'res_id': invoice.id,
@@ -340,18 +334,25 @@ class AccountEdiCommon(models.AbstractModel):
 
         return invoice
 
-    def _import_retrieve_and_fill_partner(self, invoice, name, phone, mail, vat, country_code=False):
+    def _import_retrieve_and_fill_partner(self, invoice, name, phone, mail, vat, country_code=False, street=False, street2=False, city=False, zip_code=False):
         """ Retrieve the partner, if no matching partner is found, create it (only if he has a vat and a name)
         """
-        invoice.partner_id = self.env['account.edi.format']._retrieve_partner(name=name, phone=phone, mail=mail, vat=vat)
+        invoice.partner_id = self.env['account.edi.format'] \
+            .with_company(invoice.company_id) \
+            ._retrieve_partner(name=name, phone=phone, mail=mail, vat=vat)
         if not invoice.partner_id and name and vat:
-            partner_vals = {'name': name, 'email': mail, 'phone': phone}
+            partner_vals = {'name': name, 'email': mail, 'phone': phone, 'street': street, 'street2': street2, 'zip': zip_code, 'city': city}
             country = self.env.ref(f'base.{country_code.lower()}', raise_if_not_found=False) if country_code else False
             if country:
                 partner_vals['country_id'] = country.id
             invoice.partner_id = self.env['res.partner'].create(partner_vals)
             if vat and self.env['res.partner']._run_vat_test(vat, country, invoice.partner_id.is_company):
                 invoice.partner_id.vat = vat
+
+    def _import_retrieve_and_fill_partner_bank_details(self, invoice, bank_details):
+        """ Log the bank account numbers"""
+        body = _("The following bank account numbers got retrieved during the import : %s", ", ".join(bank_details))
+        invoice.with_context(no_new_invoice=True).message_post(body=body)
 
     def _import_fill_invoice_allowance_charge(self, tree, invoice, journal, qty_factor):
         logs = []
@@ -377,12 +378,9 @@ class AccountEdiCommon(models.AbstractModel):
 
             # get the name
             name = ""
-            reason_code_node = allow_el.find('./{*}AllowanceChargeReasonCode' if is_ubl else './{*}ReasonCode')
-            if reason_code_node is not None:
-                name += reason_code_node.text + " "
             reason_node = allow_el.find('./{*}AllowanceChargeReason' if is_ubl else './{*}Reason')
             if reason_node is not None:
-                name += reason_node.text
+                name = reason_node.text
 
             # get quantity and price unit
             quantity = 1
@@ -469,6 +467,37 @@ class AccountEdiCommon(models.AbstractModel):
             ]
         return []
 
+    def _import_rounding_amount(self, invoice, rounding_node, qty_factor):
+        """
+        Add an invoice line representing the rounding amount given in the document.
+        - The amount is assumed to be in document currency
+        """
+        currency = invoice.currency_id
+        rounding_amount_currency = currency.round(qty_factor * float(rounding_node.text) if rounding_node is not None else 0.0)
+
+        if invoice.currency_id.is_zero(rounding_amount_currency):
+            return []
+
+        inverse_rate = abs(invoice.amount_total_signed) / invoice.amount_total if invoice.amount_total else 0
+        rounding_amount = invoice.company_id.currency_id.round(rounding_amount_currency * inverse_rate)
+
+        invoice.line_ids.create([{
+            'display_type': 'product',
+            'name': _('Rounding'),
+            'quantity': 1,
+            'product_id': False,
+            'price_unit': rounding_amount_currency,
+            'balance': invoice.direction_sign * rounding_amount,
+            'company_id': invoice.company_id.id,
+            'move_id': invoice.id,
+            'tax_ids': False,
+        }])
+
+        formatted_amount = formatLang(self.env, rounding_amount_currency, currency_obj=currency)
+        return [
+            _("A rounding amount of %s was detected.", formatted_amount),
+        ]
+
     def _import_fill_invoice_line_values(self, tree, xpath_dict, invoice_line, qty_factor):
         """
         Read the xml invoice, extract the invoice line values, compute the odoo values
@@ -535,7 +564,7 @@ class AccountEdiCommon(models.AbstractModel):
         for xpath in xpath_dict['basis_qty']:
             basis_quantity_node = tree.find(xpath)
             if basis_quantity_node is not None:
-                basis_qty = float(basis_quantity_node.text)
+                basis_qty = float(basis_quantity_node.text) or 1
 
         # gross_price_unit (optional)
         gross_price_unit = None
@@ -591,7 +620,7 @@ class AccountEdiCommon(models.AbstractModel):
                     # Handle Fixed Taxes: when exporting from Odoo, we use the allowance_charge node
                     fixed_taxes_list.append({
                         'tax_name': reason.text,
-                        'tax_amount': float(amount.text),
+                        'tax_amount': float(amount.text) / billed_qty,
                     })
                 else:
                     allow_charge_amount += float(amount.text) * discount_factor
@@ -599,7 +628,7 @@ class AccountEdiCommon(models.AbstractModel):
         # line_net_subtotal (mandatory)
         price_subtotal = None
         line_total_amount_node = tree.find(xpath_dict['line_total_amount'])
-        if line_total_amount_node is not None:
+        if line_total_amount_node is not None and line_total_amount_node.text and line_total_amount_node.text.strip():
             price_subtotal = float(line_total_amount_node.text)
 
         ####################################################
@@ -615,13 +644,13 @@ class AccountEdiCommon(models.AbstractModel):
         elif net_price_unit is not None:
             price_unit = (net_price_unit + rebate) / basis_qty
         elif price_subtotal is not None:
-            price_unit = (price_subtotal + allow_charge_amount) / billed_qty
+            price_unit = (price_subtotal + allow_charge_amount) / (billed_qty or 1)
         else:
             raise UserError(_("No gross price, net price nor line subtotal amount found for line in xml"))
 
         # discount
         discount = 0
-        amount_fixed_taxes = sum(d['tax_amount'] for d in fixed_taxes_list)
+        amount_fixed_taxes = sum(d['tax_amount'] * billed_qty for d in fixed_taxes_list)
         if billed_qty * price_unit != 0 and price_subtotal is not None:
             discount = 100 * (1 - (price_subtotal - amount_fixed_taxes) / (billed_qty * price_unit))
 
@@ -637,6 +666,7 @@ class AccountEdiCommon(models.AbstractModel):
             'discount': discount,
             'product_uom_id': product_uom_id,
             'fixed_taxes_list': fixed_taxes_list,
+            'price_subtotal': price_subtotal,
         }
 
     def _import_retrieve_fixed_tax(self, invoice_line_form, fixed_tax_vals):
@@ -673,15 +703,24 @@ class AccountEdiCommon(models.AbstractModel):
                 ('type_tax_use', '=', journal.type),
                 ('amount', '=', amount),
             ]
-            tax_excl = self.env['account.tax'].search(domain + [('price_include', '=', False)], limit=1)
-            tax_incl = self.env['account.tax'].search(domain + [('price_include', '=', True)], limit=1)
-            if tax_excl:
-                inv_line_vals['taxes'].append(tax_excl.id)
-            elif tax_incl:
-                inv_line_vals['taxes'].append(tax_incl.id)
-                inv_line_vals['price_unit'] *= (1 + tax_incl.amount / 100)
-            else:
+
+            tax = False
+            if hasattr(invoice_line_form, '_predict_specific_tax'):
+                # company check is already done in the prediction query
+                predicted_tax_id = invoice_line_form\
+                    ._predict_specific_tax('percent', amount, invoice_line_form.move_id.journal_id.type)
+                tax = self.env['account.tax'].browse(predicted_tax_id)
+            if not tax:
+                tax = self.env['account.tax'].search(domain + [('price_include', '=', False)], limit=1)
+            if not tax:
+                tax = self.env['account.tax'].search(domain + [('price_include', '=', True)], limit=1)
+
+            if not tax:
                 logs.append(_("Could not retrieve the tax: %s %% for line '%s'.", amount, invoice_line_form.name))
+            else:
+                inv_line_vals['taxes'].append(tax.id)
+                if tax.price_include:
+                    inv_line_vals['price_unit'] *= (1 + tax.amount / 100)
 
         # Handle Fixed Taxes
         for fixed_tax_vals in inv_line_vals['fixed_taxes_list']:
@@ -697,14 +736,19 @@ class AccountEdiCommon(models.AbstractModel):
 
         # Set the values on the line_form
         invoice_line_form.quantity = inv_line_vals['quantity']
-        if inv_line_vals.get('product_uom_id'):
-            invoice_line_form.product_uom_id = inv_line_vals['product_uom_id']
-        else:
+        if not inv_line_vals.get('product_uom_id'):
             logs.append(
                 _("Could not retrieve the unit of measure for line with label '%s'.", invoice_line_form.name))
+        elif not invoice_line_form.product_id:
+            # no product set on the line, no need to check uom compatibility
+            invoice_line_form.product_uom_id = inv_line_vals['product_uom_id']
+        elif inv_line_vals['product_uom_id'].category_id == invoice_line_form.product_id.product_tmpl_id.uom_id.category_id:
+            # needed to check that the uom is compatible with the category of the product
+            invoice_line_form.product_uom_id = inv_line_vals['product_uom_id']
+
         invoice_line_form.price_unit = inv_line_vals['price_unit']
         invoice_line_form.discount = inv_line_vals['discount']
-        invoice_line_form.tax_ids = inv_line_vals['taxes']
+        invoice_line_form.tax_ids = inv_line_vals['taxes'] or False
         return logs
 
     def _correct_invoice_tax_amount(self, tree, invoice):

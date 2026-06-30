@@ -5,6 +5,7 @@ import { registry } from "@web/core/registry";
 import { editView } from "@web/views/debug_items";
 import { clearUncommittedChanges } from "@web/webclient/actions/action_service";
 import { listView } from "@web/views/list/list_view";
+import { FormViewDialog } from "@web/views/view_dialogs/form_view_dialog";
 import { useSetupAction } from "@web/webclient/actions/action_hook";
 import testUtils from "web.test_utils";
 import { session } from "@web/session";
@@ -19,6 +20,7 @@ import {
     patchWithCleanup,
     clickSave,
 } from "../../helpers/utils";
+import { contains } from "@web/../tests/utils";
 import { createWebClient, doAction, getActionManagerServerData, loadState } from "./../helpers";
 import { errorService } from "../../../src/core/errors/error_service";
 import { RPCError } from "@web/core/network/rpc_service";
@@ -2195,11 +2197,7 @@ QUnit.module("ActionManager", (hooks) => {
             await doAction(webClient, 3);
 
             await click(target.querySelector(".o_list_button_add"));
-            assert.containsOnce(
-                document.body,
-                ".modal.o_technical_modal",
-                "Warning modal should be opened"
-            );
+            await contains(".modal.o_technical_modal");
 
             await click(document.querySelector(".modal.o_technical_modal button.btn-close"));
             assert.containsNone(
@@ -2709,5 +2707,21 @@ QUnit.module("ActionManager", (hooks) => {
             "Partners",
             "Second record",
         ]);
+    });
+
+    QUnit.test("executing an action closes dialogs", async function (assert) {
+        const webClient = await createWebClient({ serverData });
+        await doAction(webClient, 3);
+        assert.containsOnce(target, ".o_list_view");
+
+        webClient.env.services.dialog.add(FormViewDialog, { resModel: "partner", resId: 1 });
+        await nextTick();
+        assert.containsOnce(target, ".o_dialog .o_form_view");
+
+        await click(
+            target.querySelector(".o_dialog .o_form_view .o_statusbar_buttons button[name='4']")
+        );
+        assert.containsOnce(target, ".o_kanban_view");
+        assert.containsNone(target, ".o_dialog");
     });
 });

@@ -2,6 +2,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 import base64
+import json
 import socket
 
 from itertools import product
@@ -10,9 +11,8 @@ from werkzeug.urls import url_parse, url_decode
 
 from odoo.addons.mail.models.mail_message import Message
 from odoo.addons.test_mail.tests.common import TestMailCommon, TestRecipients
-from odoo.exceptions import AccessError
-from odoo.tests import tagged
-from odoo.tests.common import users, HttpCase
+from odoo.exceptions import AccessError, UserError
+from odoo.tests import tagged, users, HttpCase
 from odoo.tools import formataddr, mute_logger
 
 
@@ -66,66 +66,6 @@ class TestMultiCompanySetup(TestMailCommon, TestRecipients):
         # patch registry to simulate a ready environment
         self.patch(self.env.registry, 'ready', True)
         self.flush_tracking()
-
-    @users('employee')
-    def test_notify_reply_to_computation(self):
-        test_record = self.env['mail.test.gateway'].browse(self.test_record.ids)
-        res = test_record._notify_get_reply_to()
-        self.assertEqual(
-            res[test_record.id],
-            formataddr((
-                "%s %s" % (self.user_employee.company_id.name, test_record.name),
-                "%s@%s" % (self.alias_catchall, self.alias_domain)))
-        )
-
-    @users('employee_c2')
-    def test_notify_reply_to_computation_mc(self):
-        """ Test reply-to computation in multi company mode. Add notably tests
-        depending on user and records company_id / company_ids. """
-
-        # Test1: no company_id field
-        test_record = self.env['mail.test.gateway'].browse(self.test_record.ids)
-        res = test_record._notify_get_reply_to()
-        self.assertEqual(
-            res[test_record.id],
-            formataddr((
-                "%s %s" % (self.user_employee_c2.company_id.name, test_record.name),
-                "%s@%s" % (self.alias_catchall, self.alias_domain)))
-        )
-
-        # Test2: MC environment get default value from env
-        self.user_employee_c2.write({'company_ids': [(4, self.user_employee.company_id.id)]})
-        test_records = self.env['mail.test.multi.company'].create([
-            {'name': 'Test',
-             'company_id': self.user_employee.company_id.id},
-            {'name': 'Test',
-             'company_id': self.user_employee_c2.company_id.id},
-        ])
-        res = test_records._notify_get_reply_to()
-        for test_record in test_records:
-            self.assertEqual(
-                res[test_record.id],
-                formataddr((
-                    "%s %s" % (self.user_employee_c2.company_id.name, test_record.name),
-                    "%s@%s" % (self.alias_catchall, self.alias_domain)))
-            )
-
-        # Test3: get company from record (company_id field)
-        self.user_employee_c2.write({'company_ids': [(4, self.company_3.id)]})
-        test_records = self.env['mail.test.multi.company'].create([
-            {'name': 'Test1',
-            'company_id': self.company_3.id},
-            {'name': 'Test2',
-            'company_id': self.company_3.id},
-        ])
-        res = test_records._notify_get_reply_to()
-        for test_record in test_records:
-            self.assertEqual(
-                res[test_record.id],
-                formataddr((
-                    "%s %s" % (self.company_3.name, test_record.name),
-                    "%s@%s" % (self.alias_catchall, self.alias_domain)))
-            )
 
     @users('employee_c2')
     @mute_logger('odoo.addons.base.models.ir_rule')
@@ -356,7 +296,7 @@ class TestMultiCompanySetup(TestMailCommon, TestRecipients):
         )
 
 
-@tagged('-at_install', 'post_install', 'multi_company')
+@tagged('-at_install', 'post_install', 'multi_company', 'mail_controller')
 class TestMultiCompanyRedirect(TestMailCommon, HttpCase):
 
     @classmethod
@@ -396,6 +336,8 @@ class TestMultiCompanyRedirect(TestMailCommon, HttpCase):
                 if not login:
                     path = url_parse(response.url).path
                     self.assertEqual(path, '/web/login')
+                    decoded_fragment = url_decode(url_parse(response.url).fragment)
+                    self.assertNotIn("cids", decoded_fragment)
                 else:
                     user = self.env['res.users'].browse(self.session.uid)
                     self.assertEqual(user.login, login)
@@ -417,3 +359,78 @@ class TestMultiCompanyRedirect(TestMailCommon, HttpCase):
                             self.assertEqual(cids, f'{mc_record.company_id.id}')
                         else:
                             self.assertEqual(cids, f'{user.company_id.id},{mc_record.company_id.id}')
+
+    def test_redirect_to_records_nothread(self):
+        """ Test no thread models and redirection """
+        nothreads = self.env['mail.test.nothread'].create([
+            {
+                'company_id': company.id,
+                'name': f'Test with {company.name}',
+            }
+            for company in (self.company_admin, self.company_2, self.env['res.company'])
+        ])
+
+        # when being logged, cids should be based on current user's company unless
+        # there is an access issue (not tested here, see 'test_redirect_to_records')
+        self.authenticate(self.user_admin.login, self.user_admin.login)
+        for test_record in nothreads:
+            for user_company in self.company_admin, self.company_2:
+                with self.subTest(record_name=test_record.name, user_company=user_company):
+                    self.user_admin.write({'company_id': user_company.id})
+                    response = self.url_open(
+                        f'/mail/view?model={test_record._name}&res_id={test_record.id}',
+                        timeout=15
+                    )
+                    self.assertEqual(response.status_code, 200)
+
+                    decoded_fragment = url_decode(url_parse(response.url).fragment)
+                    self.assertTrue("cids" in decoded_fragment)
+                    self.assertEqual(decoded_fragment['cids'], str(user_company.id))
+
+        # when being not logged, cids should not be added as redirection after
+        # logging will be 'mail/view' again
+        for test_record in nothreads:
+            with self.subTest(record_name=test_record.name):
+                self.authenticate(None, None)
+                response = self.url_open(
+                    f'/mail/view?model={test_record._name}&res_id={test_record.id}',
+                    timeout=15
+                )
+                self.assertEqual(response.status_code, 200)
+                decoded_fragment = url_decode(url_parse(response.url).fragment)
+                self.assertNotIn('cids', decoded_fragment)
+
+
+@tagged("-at_install", "post_install", "multi_company", "mail_controller")
+class TestMultiCompanyThreadData(TestMailCommon, HttpCase):
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls._activate_multi_company()
+
+    def test_mail_thread_data_follower(self):
+        partner_portal = self.env["res.partner"].create(
+            {"company_id": self.company_3.id, "name": "portal partner"}
+        )
+        record = self.env["mail.test.multi.company"].create({"name": "Multi Company Record"})
+        record.message_subscribe(partner_ids=partner_portal.ids)
+        with self.assertRaises(UserError):
+            partner_portal.with_user(self.user_employee_c2).check_access_rule("read")
+        self.authenticate(self.user_employee_c2.login, self.user_employee_c2.login)
+        response = self.url_open(
+            url="/mail/thread/data",
+            headers={"Content-Type": "application/json"},
+            data=json.dumps(
+                {
+                    "params": {
+                        "thread_id": record.id,
+                        "thread_model": "mail.test.multi.company",
+                        "request_list": ["followers"],
+                    }
+                },
+            ),
+        )
+        self.assertEqual(response.status_code, 200)
+        followers = json.loads(response.content)["result"]["followers"]
+        self.assertEqual(len(followers), 1)
+        self.assertEqual(followers[0]["partner"]["id"], partner_portal.id)

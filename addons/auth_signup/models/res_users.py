@@ -152,11 +152,13 @@ class ResUsers(models.Model):
         """ retrieve the user corresponding to login (login or email),
             and reset their password
         """
-        users = self.search([('login', '=', login)])
+        users = self.search(self._get_login_domain(login))
         if not users:
-            users = self.search([('email', '=', login)])
-        if len(users) != 1:
+            users = self.search(self._get_email_domain(login))
+        if not users:
             raise Exception(_('No account found for this login'))
+        if len(users) > 1:
+            raise Exception(_('Multiple accounts found for this login'))
         return users.action_reset_password()
 
     def action_reset_password(self):
@@ -249,6 +251,18 @@ class ResUsers(models.Model):
                 except MailDeliveryException:
                     users_with_email.partner_id.with_context(create_user=True).signup_cancel()
         return users
+
+    def write(self, vals):
+        if 'active' in vals and not vals['active']:
+            self.partner_id.sudo().signup_cancel()
+        return super().write(vals)
+
+    @api.ondelete(at_uninstall=False)
+    def _ondelete_signup_cancel(self):
+        # Cancel pending partner signup when the user is deleted.
+        for user in self:
+            if user.partner_id:
+                user.partner_id.signup_cancel()
 
     @api.returns('self', lambda value: value.id)
     def copy(self, default=None):
